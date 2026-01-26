@@ -23,7 +23,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
   - 🛡️ Shield (absorbs 3 hits)
   - ❤️ Health Restore (+25 HP)
   - ⭐ Score Multiplier (2x for 10 seconds)
-- **Global Leaderboard** - Compete with players worldwide! (Firebase-powered with localStorage fallback)
+- **Global Leaderboard** - Compete with players worldwide!
 - **Volume Controls** - Adjust music and sound effects
 - **Retro Pixel Art** aesthetic with smooth animations
 
@@ -35,7 +35,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 
 ## 🏆 Leaderboard
 
-The game features a **global leaderboard**. When you achieve a top 10 score, you can enter your name and compete with players worldwide. The leaderboard automatically syncs across all players and falls back to local storage if Firebase is unavailable.
+The game features a **global leaderboard**. When you achieve a top 10 score, you can enter your name and compete with players worldwide. The leaderboard automatically syncs across all players.
 
 ## 🛠️ Technologies Used
 
@@ -44,21 +44,6 @@ The game features a **global leaderboard**. When you achieve a top 10 score, you
 - CSS3
 - Firebase Firestore (global leaderboard)
 - LocalStorage (fallback & backup)
-
-## 📦 Running Locally
-
-1. Clone this repository
-2. Open `index.html` in your web browser
-3. That's it! No build process required.
-
-## 🔥 Firebase Setup (Optional)
-
-The game works perfectly with the local leaderboard, but you can enable the global Firebase leaderboard:
-
-1. Follow the instructions in [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
-2. Configure your own Firebase project (free tier)
-3. Update `js/firebase-config.js` with your credentials
-4. Global leaderboard will automatically activate!
 
 ## 🎨 Credits
 
