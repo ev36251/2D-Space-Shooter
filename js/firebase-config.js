@@ -3,12 +3,12 @@
 // Get it from: Firebase Console > Project Settings > Your apps > Web app config
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCbCeTCmfT3Mjo9qLnQK916vnkpZXuht_Q",
+  authDomain: "cosmic-defender-d5ccb.firebaseapp.com",
+  projectId: "cosmic-defender-d5ccb",
+  storageBucket: "cosmic-defender-d5ccb.firebasestorage.app",
+  messagingSenderId: "458112972055",
+  appId: "1:458112972055:web:fed060d8063683c1e1f352"
 };
 
 // Initialize Firebase
