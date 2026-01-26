@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Test</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        #status { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Game JavaScript Test</h1>
+    <div id="status">Loading...</div>
+    <script>
+        const status = document.getElementById('status');
+        const errors = [];
+        
+        // Test if all game classes are defined
+        window.addEventListener('load', () => {
+            const scripts = [
+                'js/utils.js',
+                'js/input.js',
+                'js/collision.js',
+                'js/particle.js',
+                'js/projectile.js',
+                'js/player.js',
+                'js/enemy.js',
+                'js/boss.js',
+                'js/powerup.js',
+                'js/stage.js',
+                'js/ui.js',
+                'js/audio.js',
+                'js/game.js'
+            ];
+            
+            let html = '<h2>Script Loading Test:</h2><ul>';
+            
+            scripts.forEach((script, i) => {
+                const s = document.createElement('script');
+                s.src = script;
+                s.onerror = () => {
+                    html += `<li style="color:red;">❌ Failed: ${script}</li>`;
+                    errors.push(script);
+                };
+                s.onload = () => {
+                    html += `<li style="color:green;">✓ Loaded: ${script}</li>`;
+                };
+                document.head.appendChild(s);
+            });
+            
+            setTimeout(() => {
+                html += '</ul>';
+                
+                if (errors.length > 0) {
+                    html += '<h3 style="color:red;">Errors found!</h3>';
+                } else {
+                    html += '<h3 style="color:green;">All scripts loaded successfully!</h3>';
+                    
+                    // Try to instantiate game
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const game = new Game(canvas, ctx);
+                        html += '<p style="color:green;">✓ Game object created successfully!</p>';
+                    } catch(e) {
+                        html += `<p style="color:red;">❌ Error creating game: ${e.message}</p>`;
+                        html += `<pre>${e.stack}</pre>`;
+                    }
+                }
+                
+                status.innerHTML = html;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

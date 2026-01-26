@@ -11,7 +11,7 @@ const GameState = {
     VICTORY: 'victory'
 };
 
-// Score manager
+// Score manager with Firebase support
 class ScoreManager {
     constructor() {
         this.score = 0;
@@ -19,8 +19,17 @@ class ScoreManager {
         this.multiplierTimer = 0;
         this.multiplierDuration = 0;
         this.combo = 0;
-        this.leaderboard = this.loadLeaderboard();
-        this.highScore = this.leaderboard.length > 0 ? this.leaderboard[0].score : 0;
+        this.leaderboard = [];
+        this.highScore = 0;
+        this.useFirebase = false;
+
+        // Initialize Firebase if available
+        if (typeof initializeFirebase === 'function') {
+            this.useFirebase = initializeFirebase();
+        }
+
+        // Load leaderboard (async for Firebase, sync for localStorage)
+        this.loadLeaderboard();
     }
 
     addScore(points) {
@@ -57,27 +66,88 @@ class ScoreManager {
     }
 
     saveHighScore() {
-        // Keep for backward compatibility, but now handled by addToLeaderboard
+        // Keep for backward compatibility
         if (this.score > this.highScore) {
             this.highScore = this.score;
         }
     }
 
     loadLeaderboard() {
+        if (this.useFirebase && db) {
+            // Load from Firebase
+            db.collection('leaderboard')
+                .orderBy('score', 'desc')
+                .limit(10)
+                .get()
+                .then((querySnapshot) => {
+                    this.leaderboard = [];
+                    querySnapshot.forEach((doc) => {
+                        this.leaderboard.push(doc.data());
+                    });
+                    this.highScore = this.leaderboard.length > 0 ? this.leaderboard[0].score : 0;
+                    console.log('Leaderboard loaded from Firebase:', this.leaderboard.length, 'entries');
+                })
+                .catch((error) => {
+                    console.error('Error loading Firebase leaderboard:', error);
+                    // Fallback to localStorage
+                    this.loadLocalLeaderboard();
+                });
+        } else {
+            // Use localStorage
+            this.loadLocalLeaderboard();
+        }
+    }
+
+    loadLocalLeaderboard() {
         const saved = localStorage.getItem('cosmicDefender_leaderboard');
         if (saved) {
-            return JSON.parse(saved);
+            this.leaderboard = JSON.parse(saved);
+        } else {
+            this.leaderboard = [];
         }
-        return [];
+        this.highScore = this.leaderboard.length > 0 ? this.leaderboard[0].score : 0;
     }
 
     saveLeaderboard() {
+        // Always save to localStorage as backup
         localStorage.setItem('cosmicDefender_leaderboard', JSON.stringify(this.leaderboard));
     }
 
-    addToLeaderboard(name, score) {
+    async addToLeaderboard(name, score) {
+        const entry = {
+            name: name,
+            score: score,
+            date: new Date().toISOString(),
+            timestamp: Date.now()
+        };
+
+        if (this.useFirebase && db) {
+            // Save to Firebase
+            try {
+                await db.collection('leaderboard').add(entry);
+                console.log('Score added to Firebase leaderboard');
+
+                // Reload leaderboard from Firebase to get latest top 10
+                await this.loadLeaderboard();
+            } catch (error) {
+                console.error('Error adding to Firebase leaderboard:', error);
+                // Fallback to local
+                this.addToLocalLeaderboard(name, score);
+            }
+        } else {
+            // Save to localStorage only
+            this.addToLocalLeaderboard(name, score);
+        }
+    }
+
+    addToLocalLeaderboard(name, score) {
         // Add new entry
-        this.leaderboard.push({ name, score, date: new Date().toLocaleDateString() });
+        this.leaderboard.push({
+            name,
+            score,
+            date: new Date().toLocaleDateString(),
+            timestamp: Date.now()
+        });
 
         // Sort by score (descending)
         this.leaderboard.sort((a, b) => b.score - a.score);
