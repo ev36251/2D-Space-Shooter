@@ -6,6 +6,7 @@ const GameState = {
     STAGE_TRANSITION: 'stage_transition',
     STAGE_COMPLETE: 'stage_complete',
     BOSS_WARNING: 'boss_warning',
+    NAME_ENTRY: 'name_entry',
     GAME_OVER: 'game_over',
     VICTORY: 'victory'
 };
@@ -56,15 +57,45 @@ class ScoreManager {
     }
 
     saveHighScore() {
+        // Keep for backward compatibility, but now handled by addToLeaderboard
         if (this.score > this.highScore) {
             this.highScore = this.score;
-            localStorage.setItem('cosmicDefender_highScore', this.score.toString());
         }
     }
 
-    loadHighScore() {
-        const saved = localStorage.getItem('cosmicDefender_highScore');
-        return saved ? parseInt(saved) : 0;
+    loadLeaderboard() {
+        const saved = localStorage.getItem('cosmicDefender_leaderboard');
+        if (saved) {
+            return JSON.parse(saved);
+        }
+        return [];
+    }
+
+    saveLeaderboard() {
+        localStorage.setItem('cosmicDefender_leaderboard', JSON.stringify(this.leaderboard));
+    }
+
+    addToLeaderboard(name, score) {
+        // Add new entry
+        this.leaderboard.push({ name, score, date: new Date().toLocaleDateString() });
+
+        // Sort by score (descending)
+        this.leaderboard.sort((a, b) => b.score - a.score);
+
+        // Keep only top 10
+        this.leaderboard = this.leaderboard.slice(0, 10);
+
+        // Save to localStorage
+        this.saveLeaderboard();
+
+        // Update high score
+        this.highScore = this.leaderboard[0].score;
+    }
+
+    isTopScore(score) {
+        // Check if score makes it into top 10
+        if (this.leaderboard.length < 10) return true;
+        return score > this.leaderboard[this.leaderboard.length - 1].score;
     }
 
     reset() {
