@@ -100,57 +100,22 @@ Or use VS Code's Live Server extension.
 
 ## Deployment
 
-### Deploy to GitHub Pages
+### GitHub Pages
+1. Repository: https://github.com/ev36251/2D-Space-Shooter
+2. Enable GitHub Pages in repository settings
+3. Game URL: https://ev36251.github.io/2D-Space-Shooter/
 
-1. Initialize Git repository:
-```bash
-cd "/Users/EvanRobinson/Desktop/Coded Games/Space Shooter Game"
-git init
-git add .
-git commit -m "Initial commit: Cosmic Defender"
-```
-
-2. Create GitHub repository at https://github.com/new
-
-3. Push to GitHub:
-```bash
-git remote add origin https://github.com/YOUR_USERNAME/cosmic-defender.git
-git branch -M main
-git push -u origin main
-```
-
-4. Enable GitHub Pages:
-   - Go to repository Settings
-   - Navigate to Pages section
-   - Select "main" branch as source
-   - Save
-
-5. Access your game at: `https://YOUR_USERNAME.github.io/cosmic-defender/`
-
-### Deploy to Vercel
-
-1. Create account at https://vercel.com
-
-2. Option A - Via GitHub:
-   - Click "Import Project"
-   - Select your GitHub repository
-   - Deploy automatically
-
-3. Option B - Via CLI:
-```bash
-npm install -g vercel
-cd "/Users/EvanRobinson/Desktop/Coded Games/Space Shooter Game"
-vercel
-```
-
-4. Access your game at the Vercel URL provided
+### Vercel
+Deploy automatically via Vercel for better performance and CDN.
 
 ## Asset Credits
 
-See [ASSET_GUIDE.md](ASSET_GUIDE.md) for detailed asset download instructions.
-
 Graphics from:
 - Space Shooter Redux by Kenney - CC0 License
+- Seamless Space Backgrounds by OpenGameArt.org
+
+Music from:
+- OpenGameArt.org - CC0 License
 
 ## Tech Stack
 
@@ -175,7 +140,7 @@ Graphics from:
 ## License
 
 This game code is provided as-is for educational purposes.
-Assets are credited to their respective creators (see ASSET_GUIDE.md).
+Assets are credited to their respective creators.
 
 ---
 
