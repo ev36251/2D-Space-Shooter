@@ -3,6 +3,7 @@ class UI {
     constructor() {
         this.blinkTimer = 0;
         this.blinkState = true;
+        this.selectedVolumeControl = 0; // 0 = music, 1 = sfx
     }
 
     update(deltaTime) {
@@ -103,8 +104,28 @@ class UI {
         ctx.fillStyle = Colors.UI_TEXT;
         ctx.fillText(`STAGE ${game.currentStage}`, GameConfig.CANVAS_WIDTH - 20, 30);
 
-        // Weapon level
-        ctx.fillText(`WEAPON: ${'I'.repeat(game.player.weaponLevel)}`, GameConfig.CANVAS_WIDTH - 20, 55);
+        // Weapon level with gun icons
+        ctx.fillStyle = Colors.UI_TEXT;
+        ctx.fillText('WEAPON:', GameConfig.CANVAS_WIDTH - 180, 55);
+
+        // Draw gun icons based on weapon level
+        for (let i = 0; i < 3; i++) {
+            const iconX = GameConfig.CANVAS_WIDTH - 100 + (i * 25);
+            const iconY = 48;
+
+            if (i < game.player.weaponLevel) {
+                // Active gun icon (filled)
+                ctx.fillStyle = '#00FF00';
+                ctx.fillRect(iconX, iconY, 8, 12);
+                ctx.fillRect(iconX + 2, iconY - 3, 4, 3);
+            } else {
+                // Inactive gun icon (outline)
+                ctx.strokeStyle = '#00FF00';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(iconX, iconY, 8, 12);
+                ctx.strokeRect(iconX + 2, iconY - 3, 4, 3);
+            }
+        }
 
         // Shield indicator
         if (game.player.shieldActive) {
@@ -115,9 +136,9 @@ class UI {
         ctx.textAlign = 'left';
     }
 
-    renderPauseMenu(ctx) {
+    renderPauseMenu(ctx, audioManager) {
         // Semi-transparent overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         ctx.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
 
         // Pause text
@@ -126,15 +147,65 @@ class UI {
         ctx.textAlign = 'center';
         ctx.shadowBlur = 20;
         ctx.shadowColor = Colors.UI_TEXT;
-        ctx.fillText('PAUSED', GameConfig.CANVAS_WIDTH / 2, GameConfig.CANVAS_HEIGHT / 2);
+        ctx.fillText('PAUSED', GameConfig.CANVAS_WIDTH / 2, 150);
         ctx.shadowBlur = 0;
 
+        // Volume Controls Section
+        ctx.font = '20px "Press Start 2P"';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText('VOLUME', GameConfig.CANVAS_WIDTH / 2, 250);
+
+        // Music Volume
+        ctx.font = '14px "Press Start 2P"';
+        ctx.textAlign = 'right';
+        ctx.fillText('MUSIC', GameConfig.CANVAS_WIDTH / 2 - 30, 300);
+
+        this.renderVolumeSlider(ctx, GameConfig.CANVAS_WIDTH / 2 - 20, 285,
+                               audioManager ? audioManager.musicVolume : 0.3);
+
+        // SFX Volume
+        ctx.fillText('SFX', GameConfig.CANVAS_WIDTH / 2 - 30, 350);
+
+        this.renderVolumeSlider(ctx, GameConfig.CANVAS_WIDTH / 2 - 20, 335,
+                               audioManager ? audioManager.sfxVolume : 0.5);
+
         // Instructions
+        ctx.font = '12px "Press Start 2P"';
+        ctx.fillStyle = '#AAAAAA';
+        ctx.textAlign = 'center';
+        ctx.fillText('LEFT/RIGHT - Music Volume', GameConfig.CANVAS_WIDTH / 2, 420);
+        ctx.fillText('UP/DOWN - SFX Volume', GameConfig.CANVAS_WIDTH / 2, 445);
+
         ctx.font = '16px "Press Start 2P"';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText('Press P or ESC to Resume', GameConfig.CANVAS_WIDTH / 2, GameConfig.CANVAS_HEIGHT / 2 + 60);
+        ctx.fillText('Press P or ESC to Resume', GameConfig.CANVAS_WIDTH / 2, 500);
 
         ctx.textAlign = 'left';
+    }
+
+    renderVolumeSlider(ctx, x, y, volume) {
+        const sliderWidth = 200;
+        const sliderHeight = 20;
+
+        // Slider background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(x - 2, y - 2, sliderWidth + 4, sliderHeight + 4);
+
+        // Slider border
+        ctx.strokeStyle = '#00FF00';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, sliderWidth, sliderHeight);
+
+        // Volume fill
+        const fillWidth = sliderWidth * volume;
+        ctx.fillStyle = '#00FF00';
+        ctx.fillRect(x, y, fillWidth, sliderHeight);
+
+        // Volume percentage
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '12px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(volume * 100)}%`, x + sliderWidth / 2, y + 15);
     }
 
     renderGameOver(ctx, score, highScore) {

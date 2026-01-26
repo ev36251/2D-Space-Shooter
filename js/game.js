@@ -183,7 +183,8 @@ class Game {
                 break;
 
             case GameState.PAUSED:
-                // Nothing updates while paused
+                // Handle volume control inputs
+                this.handleVolumeControls(deltaTime);
                 break;
 
             case GameState.STAGE_TRANSITION:
@@ -283,6 +284,34 @@ class Game {
         }
     }
 
+    handleVolumeControls(deltaTime) {
+        if (!this.audioManager) return;
+
+        const volumeStep = 0.05; // 5% per key press
+
+        // Left/Right arrows adjust volume
+        if (this.input.isLeftPressed()) {
+            // Decrease music volume
+            const newVolume = Math.max(0, this.audioManager.musicVolume - volumeStep);
+            this.audioManager.setMusicVolume(newVolume);
+        }
+        if (this.input.isRightPressed()) {
+            // Increase music volume
+            const newVolume = Math.min(1, this.audioManager.musicVolume + volumeStep);
+            this.audioManager.setMusicVolume(newVolume);
+        }
+        if (this.input.isDownPressed()) {
+            // Decrease SFX volume
+            const newVolume = Math.max(0, this.audioManager.sfxVolume - volumeStep);
+            this.audioManager.setSfxVolume(newVolume);
+        }
+        if (this.input.isUpPressed()) {
+            // Increase SFX volume
+            const newVolume = Math.min(1, this.audioManager.sfxVolume + volumeStep);
+            this.audioManager.setSfxVolume(newVolume);
+        }
+    }
+
     updateTimedState(deltaTime) {
         this.stateTimer += deltaTime;
 
@@ -372,7 +401,7 @@ class Game {
 
         // Render pause menu on top if paused
         if (this.state === GameState.PAUSED) {
-            this.ui.renderPauseMenu(this.ctx);
+            this.ui.renderPauseMenu(this.ctx, this.audioManager);
         }
 
         // Render boss warning if active
