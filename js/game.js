@@ -148,6 +148,11 @@ class Game {
 
         // Pause handling
         this.pausePressed = false;
+
+        // Name entry
+        this.playerName = '';
+        this.enterPressed = false;
+        this.victoryAchieved = false;
     }
 
     get score() {
@@ -196,12 +201,17 @@ class Game {
         }
 
         // Handle Enter key for state transitions
-        if (this.input.isEnterPressed()) {
+        if (this.input.isEnterPressed() && !this.enterPressed) {
+            this.enterPressed = true;
             if (this.state === GameState.MENU) {
                 this.startNewGame();
+            } else if (this.state === GameState.NAME_ENTRY) {
+                this.submitName();
             } else if (this.state === GameState.GAME_OVER || this.state === GameState.VICTORY) {
                 this.resetToMenu();
             }
+        } else if (!this.input.isEnterPressed()) {
+            this.enterPressed = false;
         }
 
         // Update based on state
@@ -223,6 +233,10 @@ class Game {
             case GameState.STAGE_COMPLETE:
             case GameState.BOSS_WARNING:
                 this.updateTimedState(deltaTime);
+                break;
+
+            case GameState.NAME_ENTRY:
+                this.handleNameEntry();
                 break;
 
             case GameState.GAME_OVER:
@@ -316,7 +330,7 @@ class Game {
         }
     }
 
-    handleVolumeControls(deltaTime) {
+    handleVolumeControls() {
         if (!this.audioManager) return;
 
         const volumeStep = 0.05; // 5% per key press
@@ -341,6 +355,48 @@ class Game {
             // Increase SFX volume
             const newVolume = Math.min(1, this.audioManager.sfxVolume + volumeStep);
             this.audioManager.setSfxVolume(newVolume);
+        }
+    }
+
+    handleNameEntry() {
+        // Listen for key presses to build player name
+        const keys = this.input.keys;
+
+        for (let key in keys) {
+            if (keys[key] && !this.input.lastKeys[key]) {
+                // Key was just pressed
+                if (key.length === 1 && /[A-Za-z0-9 ]/.test(key)) {
+                    // Add letter, number, or space
+                    if (this.playerName.length < 15) {
+                        this.playerName += key.toUpperCase();
+                    }
+                } else if (key === 'Backspace') {
+                    // Remove last character
+                    this.playerName = this.playerName.slice(0, -1);
+                }
+            }
+        }
+
+        // Store current key states for next frame
+        this.input.lastKeys = {...keys};
+    }
+
+    submitName() {
+        // Use default name if empty
+        const finalName = this.playerName.trim() || 'PLAYER';
+
+        // Add to leaderboard
+        this.scoreManager.addToLeaderboard(finalName, this.score);
+
+        // Reset name
+        this.playerName = '';
+
+        // Go to appropriate screen (victory or game over)
+        if (this.victoryAchieved) {
+            this.setState(GameState.VICTORY);
+            this.victoryAchieved = false;
+        } else {
+            this.setState(GameState.GAME_OVER);
         }
     }
 
@@ -377,6 +433,10 @@ class Game {
 
             case GameState.STAGE_COMPLETE:
                 this.renderStageComplete();
+                break;
+
+            case GameState.NAME_ENTRY:
+                this.renderNameEntry();
                 break;
 
             case GameState.GAME_OVER:
@@ -460,12 +520,16 @@ class Game {
         this.ui.renderStageComplete(this.ctx, this.currentStage - 1, GameConfig.SCORE_STAGE_BONUS);
     }
 
+    renderNameEntry() {
+        this.ui.renderNameEntry(this.ctx, this.score, this.playerName);
+    }
+
     renderGameOver() {
-        this.ui.renderGameOver(this.ctx, this.score, this.highScore);
+        this.ui.renderGameOver(this.ctx, this.score, this.highScore, this.scoreManager.leaderboard);
     }
 
     renderVictory() {
-        this.ui.renderVictory(this.ctx, this.score, this.highScore);
+        this.ui.renderVictory(this.ctx, this.score, this.highScore, this.scoreManager.leaderboard);
     }
 
     // State management
@@ -611,12 +675,16 @@ class Game {
         // Reset combo
         this.scoreManager.resetCombo();
 
-        // Game over
-        this.scoreManager.saveHighScore();
-        this.setTimedState(GameState.GAME_OVER, 3.0);
-
+        // Check if score qualifies for leaderboard
         setTimeout(() => {
-            this.setState(GameState.GAME_OVER);
+            if (this.scoreManager.isTopScore(this.score)) {
+                // Go to name entry
+                this.setState(GameState.NAME_ENTRY);
+            } else {
+                // Regular game over
+                this.scoreManager.saveHighScore();
+                this.setState(GameState.GAME_OVER);
+            }
         }, 3000);
     }
 
@@ -634,8 +702,17 @@ class Game {
     }
 
     onVictory() {
-        this.scoreManager.saveHighScore();
-        this.setState(GameState.VICTORY);
+        this.victoryAchieved = true;
+
+        // Check if score qualifies for leaderboard
+        if (this.scoreManager.isTopScore(this.score)) {
+            // Go to name entry first
+            this.setState(GameState.NAME_ENTRY);
+        } else {
+            // Regular victory screen
+            this.scoreManager.saveHighScore();
+            this.setState(GameState.VICTORY);
+        }
     }
 
     // Helper methods

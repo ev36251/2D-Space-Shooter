@@ -208,7 +208,66 @@ class UI {
         ctx.fillText(`${Math.round(volume * 100)}%`, x + sliderWidth / 2, y + 15);
     }
 
-    renderGameOver(ctx, score, highScore) {
+    renderNameEntry(ctx, score, playerName) {
+        // Dark overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
+
+        // Congratulations text
+        ctx.fillStyle = Colors.UI_TEXT;
+        ctx.font = '36px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = Colors.UI_TEXT;
+        ctx.fillText('TOP 10 SCORE!', GameConfig.CANVAS_WIDTH / 2, 150);
+        ctx.shadowBlur = 0;
+
+        // Score
+        ctx.font = '20px "Press Start 2P"';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`SCORE: ${score}`, GameConfig.CANVAS_WIDTH / 2, 220);
+
+        // Instructions
+        ctx.font = '14px "Press Start 2P"';
+        ctx.fillText('ENTER YOUR NAME:', GameConfig.CANVAS_WIDTH / 2, 280);
+
+        // Name input box
+        const boxWidth = 400;
+        const boxHeight = 50;
+        const boxX = GameConfig.CANVAS_WIDTH / 2 - boxWidth / 2;
+        const boxY = 300;
+
+        // Box background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(boxX - 2, boxY - 2, boxWidth + 4, boxHeight + 4);
+
+        // Box border
+        ctx.strokeStyle = Colors.UI_TEXT;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+        // Player name text
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '24px "Press Start 2P"';
+        const displayName = playerName || '_';
+        ctx.fillText(displayName, GameConfig.CANVAS_WIDTH / 2, boxY + 35);
+
+        // Character limit
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillStyle = '#AAAAAA';
+        ctx.fillText(`${playerName.length}/15`, GameConfig.CANVAS_WIDTH / 2, boxY + boxHeight + 20);
+
+        // Submit prompt
+        if (this.blinkState) {
+            ctx.font = '16px "Press Start 2P"';
+            ctx.fillStyle = Colors.UI_TEXT;
+            ctx.fillText('PRESS ENTER TO SUBMIT', GameConfig.CANVAS_WIDTH / 2, 450);
+        }
+
+        ctx.textAlign = 'left';
+    }
+
+    renderGameOver(ctx, score, highScore, leaderboard) {
         // Dark overlay
         ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
         ctx.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
@@ -219,32 +278,28 @@ class UI {
         ctx.textAlign = 'center';
         ctx.shadowBlur = 30;
         ctx.shadowColor = '#FF0000';
-        ctx.fillText('GAME OVER', GameConfig.CANVAS_WIDTH / 2, 200);
+        ctx.fillText('GAME OVER', GameConfig.CANVAS_WIDTH / 2, 120);
         ctx.shadowBlur = 0;
 
         // Score
         ctx.font = '20px "Press Start 2P"';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText(`FINAL SCORE: ${score}`, GameConfig.CANVAS_WIDTH / 2, 280);
+        ctx.fillText(`FINAL SCORE: ${score}`, GameConfig.CANVAS_WIDTH / 2, 180);
 
-        if (score > highScore) {
-            ctx.fillStyle = Colors.UI_TEXT;
-            ctx.fillText('NEW HIGH SCORE!', GameConfig.CANVAS_WIDTH / 2, 320);
-        } else {
-            ctx.fillText(`HIGH SCORE: ${highScore}`, GameConfig.CANVAS_WIDTH / 2, 320);
-        }
+        // Leaderboard
+        this.renderLeaderboard(ctx, leaderboard, 220);
 
         // Restart prompt
         if (this.blinkState) {
             ctx.font = '16px "Press Start 2P"';
             ctx.fillStyle = Colors.UI_TEXT;
-            ctx.fillText('PRESS ENTER TO RESTART', GameConfig.CANVAS_WIDTH / 2, 420);
+            ctx.fillText('PRESS ENTER TO RESTART', GameConfig.CANVAS_WIDTH / 2, 540);
         }
 
         ctx.textAlign = 'left';
     }
 
-    renderVictory(ctx, score, highScore) {
+    renderVictory(ctx, score, highScore, leaderboard) {
         // Victory overlay
         ctx.fillStyle = 'rgba(0, 0, 50, 0.9)';
         ctx.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
@@ -255,30 +310,65 @@ class UI {
         ctx.textAlign = 'center';
         ctx.shadowBlur = 30;
         ctx.shadowColor = Colors.UI_TEXT;
-        ctx.fillText('VICTORY!', GameConfig.CANVAS_WIDTH / 2, 180);
+        ctx.fillText('VICTORY!', GameConfig.CANVAS_WIDTH / 2, 100);
         ctx.shadowBlur = 0;
 
         // Congratulations
         ctx.font = '16px "Press Start 2P"';
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillText('Galaxy Saved!', GameConfig.CANVAS_WIDTH / 2, 240);
+        ctx.fillText('Galaxy Saved!', GameConfig.CANVAS_WIDTH / 2, 140);
 
         // Score
         ctx.font = '20px "Press Start 2P"';
-        ctx.fillText(`FINAL SCORE: ${score}`, GameConfig.CANVAS_WIDTH / 2, 300);
+        ctx.fillText(`FINAL SCORE: ${score}`, GameConfig.CANVAS_WIDTH / 2, 180);
 
-        if (score > highScore) {
-            ctx.fillStyle = Colors.UI_TEXT;
-            ctx.fillText('NEW HIGH SCORE!', GameConfig.CANVAS_WIDTH / 2, 340);
-        } else {
-            ctx.fillText(`HIGH SCORE: ${highScore}`, GameConfig.CANVAS_WIDTH / 2, 340);
-        }
+        // Leaderboard
+        this.renderLeaderboard(ctx, leaderboard, 220);
 
         // Restart prompt
         if (this.blinkState) {
             ctx.font = '16px "Press Start 2P"';
             ctx.fillStyle = Colors.UI_TEXT;
-            ctx.fillText('PRESS ENTER TO PLAY AGAIN', GameConfig.CANVAS_WIDTH / 2, 460);
+            ctx.fillText('PRESS ENTER TO PLAY AGAIN', GameConfig.CANVAS_WIDTH / 2, 540);
+        }
+
+        ctx.textAlign = 'left';
+    }
+
+    renderLeaderboard(ctx, leaderboard, startY) {
+        // Leaderboard title
+        ctx.font = '18px "Press Start 2P"';
+        ctx.fillStyle = Colors.UI_TEXT;
+        ctx.textAlign = 'center';
+        ctx.fillText('TOP SCORES', GameConfig.CANVAS_WIDTH / 2, startY);
+
+        // Leaderboard entries
+        ctx.font = '12px "Press Start 2P"';
+        const lineHeight = 25;
+
+        for (let i = 0; i < Math.min(10, leaderboard.length); i++) {
+            const entry = leaderboard[i];
+            const y = startY + 35 + (i * lineHeight);
+
+            // Rank
+            ctx.fillStyle = i < 3 ? '#FFD700' : '#FFFFFF'; // Gold for top 3
+            ctx.textAlign = 'left';
+            ctx.fillText(`${i + 1}.`, GameConfig.CANVAS_WIDTH / 2 - 180, y);
+
+            // Name
+            ctx.textAlign = 'left';
+            ctx.fillText(entry.name, GameConfig.CANVAS_WIDTH / 2 - 150, y);
+
+            // Score
+            ctx.textAlign = 'right';
+            ctx.fillText(entry.score.toString(), GameConfig.CANVAS_WIDTH / 2 + 180, y);
+        }
+
+        // Show placeholder if empty
+        if (leaderboard.length === 0) {
+            ctx.fillStyle = '#888888';
+            ctx.textAlign = 'center';
+            ctx.fillText('No scores yet!', GameConfig.CANVAS_WIDTH / 2, startY + 50);
         }
 
         ctx.textAlign = 'left';

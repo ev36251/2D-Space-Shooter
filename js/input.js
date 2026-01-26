@@ -2,6 +2,7 @@
 class InputHandler {
     constructor() {
         this.keys = {};
+        this.lastKeys = {}; // Track previous frame's key states
         this.setupKeyboardListeners();
     }
 
