@@ -18,7 +18,8 @@ class ScoreManager {
         this.multiplierTimer = 0;
         this.multiplierDuration = 0;
         this.combo = 0;
-        this.highScore = this.loadHighScore();
+        this.leaderboard = this.loadLeaderboard();
+        this.highScore = this.leaderboard.length > 0 ? this.leaderboard[0].score : 0;
     }
 
     addScore(points) {
