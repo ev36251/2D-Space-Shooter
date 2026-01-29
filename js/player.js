@@ -2,7 +2,8 @@
 class Player extends GameObject {
     constructor(x, y) {
         super(x, y, 48, 48); // Player ship size
-        this.speed = GameConfig.PLAYER_SPEED;
+        this.baseSpeed = GameConfig.PLAYER_SPEED;
+        this.speed = this.baseSpeed;
         this.health = 100; // Health bar system
         this.maxHealth = 100;
         this.weaponLevel = 1;
@@ -20,6 +21,10 @@ class Player extends GameObject {
         this.maxMissiles = 9; // Maximum missiles player can hold
         this.missileFireTimer = 0;
         this.missileFireRate = 0.5; // Can fire a missile every 0.5 seconds
+        this.speedBoostActive = false;
+        this.speedBoostTimer = 0;
+        this.speedBoostDuration = 0;
+        this.speedBoostMultiplier = 1.5; // 50% faster when boosted
     }
 
     update(deltaTime, input, game) {
@@ -40,6 +45,16 @@ class Player extends GameObject {
             if (this.invincibleTimer >= this.invincibleDuration) {
                 this.invincible = false;
                 this.invincibleTimer = 0;
+            }
+        }
+
+        // Update speed boost
+        if (this.speedBoostActive) {
+            this.speedBoostTimer += deltaTime;
+            if (this.speedBoostTimer >= this.speedBoostDuration) {
+                this.speedBoostActive = false;
+                this.speedBoostTimer = 0;
+                this.speed = this.baseSpeed;
             }
         }
 
@@ -198,8 +213,35 @@ class Player extends GameObject {
         this.health = Math.min(this.health + 25, this.maxHealth);
     }
 
+    activateSpeedBoost(duration) {
+        this.speedBoostActive = true;
+        this.speedBoostTimer = 0;
+        this.speedBoostDuration = duration;
+        this.speed = this.baseSpeed * this.speedBoostMultiplier;
+    }
+
     render(ctx) {
         if (!this.alive) return;
+
+        // Draw speed boost effect if active
+        if (this.speedBoostActive) {
+            ctx.strokeStyle = '#00FFFF';
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.3 + Math.sin(Date.now() / 50) * 0.2;
+            // Draw speed lines behind ship
+            for (let i = 0; i < 3; i++) {
+                const lineY = this.y + this.height + 5 + (i * 8);
+                ctx.beginPath();
+                ctx.moveTo(this.getCenterX() - 10 + (i * 5), lineY);
+                ctx.lineTo(this.getCenterX() - 10 + (i * 5), lineY + 15);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(this.getCenterX() + 10 - (i * 5), lineY);
+                ctx.lineTo(this.getCenterX() + 10 - (i * 5), lineY + 15);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1.0;
+        }
 
         // Draw shield if active
         if (this.shieldActive) {
@@ -258,5 +300,8 @@ class Player extends GameObject {
         this.fireRate = GameConfig.PLAYER_FIRE_RATE;
         this.missiles = 0;
         this.missileFireTimer = 0;
+        this.speedBoostActive = false;
+        this.speedBoostTimer = 0;
+        this.speed = this.baseSpeed;
     }
 }

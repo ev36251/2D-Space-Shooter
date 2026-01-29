@@ -25,6 +25,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
   - 🛡️ Shield (absorbs 3 hits with visual indicator)
   - ❤️ Health Restore (+25 HP)
   - ⭐ Score Multiplier (2x for 10 seconds)
+  - ⚡ Speed Boost (+50% movement speed for 10 seconds)
 - **Global Leaderboard** - Compete with players worldwide!
 - **Dynamic Soundtrack** - Unique music for each stage, bosses, and victory/defeat
 - **Volume Controls** - Adjust music and sound effects in pause menu

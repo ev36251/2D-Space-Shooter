@@ -4,7 +4,8 @@ const PowerupType = {
     SHIELD: 'shield',
     LIFE: 'life',
     MULTIPLIER: 'multiplier',
-    MISSILE: 'missile'
+    MISSILE: 'missile',
+    SPEED: 'speed'
 };
 
 // Power-up class
@@ -27,6 +28,7 @@ class Powerup extends GameObject {
             case PowerupType.LIFE: return 'powerupLife';
             case PowerupType.MULTIPLIER: return 'powerupMultiplier';
             case PowerupType.MISSILE: return 'powerupMissile';
+            case PowerupType.SPEED: return 'powerupSpeed';
             default: return null;
         }
     }
@@ -38,6 +40,7 @@ class Powerup extends GameObject {
             case PowerupType.LIFE: return Colors.POWERUP_LIFE;
             case PowerupType.MULTIPLIER: return '#FFD700';
             case PowerupType.MISSILE: return '#FF6600';
+            case PowerupType.SPEED: return '#00FFFF';
             default: return '#FFFFFF';
         }
     }
@@ -151,6 +154,19 @@ class Powerup extends GameObject {
                     ctx.fillRect(-8, 4, 4, 6);
                     ctx.fillRect(4, 4, 4, 6);
                     break;
+
+                case PowerupType.SPEED:
+                    // Draw lightning bolt
+                    ctx.beginPath();
+                    ctx.moveTo(2, -10);
+                    ctx.lineTo(-6, 0);
+                    ctx.lineTo(-1, 0);
+                    ctx.lineTo(-3, 10);
+                    ctx.lineTo(6, 0);
+                    ctx.lineTo(1, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
             }
 
             // Add glow
@@ -186,6 +202,10 @@ class Powerup extends GameObject {
             case PowerupType.MISSILE:
                 player.addMissiles(3); // Add 3 missiles
                 break;
+
+            case PowerupType.SPEED:
+                player.activateSpeedBoost(10.0); // 10 seconds of speed boost
+                break;
         }
     }
 }
@@ -201,18 +221,20 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.SHIELD,
             PowerupType.LIFE,
             PowerupType.MULTIPLIER,
-            PowerupType.MISSILE
+            PowerupType.MISSILE,
+            PowerupType.SPEED
         ];
-        weights = [30, 25, 20, 25]; // Redistribute weapon weight to other powerups
+        weights = [10, 10, 10, 10, 60]; // Speed boost 60% for testing
     } else {
         types = [
             PowerupType.WEAPON,
             PowerupType.SHIELD,
             PowerupType.LIFE,
             PowerupType.MULTIPLIER,
-            PowerupType.MISSILE
+            PowerupType.MISSILE,
+            PowerupType.SPEED
         ];
-        weights = [35, 25, 12, 12, 16]; // Weapon most common, missiles fairly common
+        weights = [10, 10, 5, 5, 10, 60]; // Speed boost 60% for testing
     }
 
     // Weighted random selection
