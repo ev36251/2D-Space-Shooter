@@ -10,9 +10,9 @@ class AudioManager {
         this.initialized = false;
     }
 
-    loadSound(name, path, isMusic = false) {
+    loadSound(name, path, isMusic = false, volumeMultiplier = 1.0) {
         const audio = new Audio(path);
-        audio.volume = isMusic ? this.musicVolume : this.sfxVolume;
+        audio.volume = isMusic ? this.musicVolume * volumeMultiplier : this.sfxVolume;
 
         if (isMusic) {
             audio.loop = true;
@@ -20,7 +20,8 @@ class AudioManager {
 
         this.sounds[name] = {
             audio: audio,
-            isMusic: isMusic
+            isMusic: isMusic,
+            volumeMultiplier: volumeMultiplier
         };
     }
 
@@ -57,7 +58,7 @@ class AudioManager {
 
         this.currentMusic = name;
         sound.audio.currentTime = 0;
-        sound.audio.volume = this.musicVolume;
+        sound.audio.volume = this.musicVolume * (sound.volumeMultiplier || 1.0);
 
         sound.audio.play().catch(err => {
             console.log('Music play failed:', err);
@@ -103,7 +104,7 @@ class AudioManager {
 
         Object.values(this.sounds).forEach(sound => {
             if (sound.isMusic) {
-                sound.audio.volume = this.musicVolume;
+                sound.audio.volume = this.musicVolume * (sound.volumeMultiplier || 1.0);
             }
         });
     }
@@ -133,7 +134,10 @@ class AudioManager {
         this.loadSound('stage1Theme', 'assets/audio/music/stage-1-theme.mp3', true);
         this.loadSound('stage2Theme', 'assets/audio/music/stage-2-theme.mp3', true);
         this.loadSound('stage3Theme', 'assets/audio/music/stage-3-theme.ogg', true);
-        this.loadSound('bossTheme', 'assets/audio/music/boss-theme.wav', true);
+        this.loadSound('bossTheme', 'assets/audio/music/boss-theme.wav', true, 0.5); // Play at 50% volume
+        this.loadSound('victoryTheme', 'assets/audio/music/victory.mp3', true); // Victory music after stages 1 & 2
+        this.loadSound('superVictoryTheme', 'assets/audio/music/super victory.mp3', true); // Victory music after stage 3
+        this.loadSound('loseTheme', 'assets/audio/music/lose.mp3', true); // Game over music
 
         // Sound effects
         this.loadSound('playerShoot', 'assets/audio/sfx/player-shoot.wav', false);

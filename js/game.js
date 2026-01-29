@@ -687,9 +687,15 @@ class Game {
         // Award bonus
         this.scoreManager.addScore(GameConfig.SCORE_STAGE_BONUS);
 
-        // Play sound
+        // Stop boss music and play victory music
         if (this.audioManager) {
             this.audioManager.playSound('stageComplete');
+            // Play super victory theme for stage 3, regular victory for stages 1-2
+            if (this.currentStage === 3) {
+                this.audioManager.playMusic('superVictoryTheme');
+            } else {
+                this.audioManager.playMusic('victoryTheme');
+            }
         }
 
         this.setTimedState(GameState.STAGE_COMPLETE, 3.0);
@@ -737,6 +743,8 @@ class Game {
         // Play sound
         if (this.audioManager) {
             this.audioManager.playSound('playerDeath');
+            // Play lose theme
+            this.audioManager.playMusic('loseTheme');
         }
 
         // Create explosion
