@@ -8,6 +8,9 @@ const PowerupType = {
     SPEED: 'speed'
 };
 
+// Track last spawned powerup type to prevent consecutive duplicates
+let lastSpawnedPowerupType = null;
+
 // Power-up class
 class Powerup extends GameObject {
     constructor(x, y, type) {
@@ -156,7 +159,14 @@ class Powerup extends GameObject {
                     break;
 
                 case PowerupType.SPEED:
+                    // Draw background circle glow
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+                    ctx.fill();
+
                     // Draw lightning bolt
+                    ctx.fillStyle = this.getColor();
                     ctx.beginPath();
                     ctx.moveTo(2, -10);
                     ctx.lineTo(-6, 0);
@@ -224,7 +234,7 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [10, 10, 10, 10, 60]; // Speed boost 60% for testing
+        weights = [25, 15, 20, 25, 15]; // Shield 25%, Life 15%, Multiplier 20%, Missile 25%, Speed 15%
     } else {
         types = [
             PowerupType.WEAPON,
@@ -234,7 +244,16 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [10, 10, 5, 5, 10, 60]; // Speed boost 60% for testing
+        weights = [20, 20, 10, 15, 20, 15]; // Weapon 20%, Shield 20%, Life 10%, Multiplier 15%, Missile 20%, Speed 15%
+    }
+
+    // Filter out the last spawned type to prevent consecutive duplicates
+    if (lastSpawnedPowerupType !== null) {
+        const lastIndex = types.indexOf(lastSpawnedPowerupType);
+        if (lastIndex !== -1) {
+            types = types.filter((_, i) => i !== lastIndex);
+            weights = weights.filter((_, i) => i !== lastIndex);
+        }
     }
 
     // Weighted random selection
@@ -244,9 +263,13 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
     for (let i = 0; i < types.length; i++) {
         random -= weights[i];
         if (random <= 0) {
+            lastSpawnedPowerupType = types[i];
             return new Powerup(x, y, types[i]);
         }
     }
 
-    return new Powerup(x, y, excludeWeapon ? PowerupType.SHIELD : PowerupType.WEAPON);
+    // Fallback
+    const fallbackType = excludeWeapon ? PowerupType.SHIELD : PowerupType.WEAPON;
+    lastSpawnedPowerupType = fallbackType;
+    return new Powerup(x, y, fallbackType);
 }
