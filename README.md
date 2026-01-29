@@ -21,12 +21,13 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 - **Epic Boss Battles** at the end of each stage
 - **Power-ups System**:
   - 🔫 Weapon Upgrades (up to triple shot)
-  - 🚀 Missiles (explosive damage, press SHIFT to fire)
-  - 🛡️ Shield (absorbs 3 hits)
+  - 🚀 Missiles (explosive area damage, press SHIFT to fire)
+  - 🛡️ Shield (absorbs 3 hits with visual indicator)
   - ❤️ Health Restore (+25 HP)
   - ⭐ Score Multiplier (2x for 10 seconds)
 - **Global Leaderboard** - Compete with players worldwide!
-- **Volume Controls** - Adjust music and sound effects
+- **Dynamic Soundtrack** - Unique music for each stage, bosses, and victory/defeat
+- **Volume Controls** - Adjust music and sound effects in pause menu
 - **Retro Pixel Art** aesthetic with smooth animations
 
 ## 🎯 Game Stages
