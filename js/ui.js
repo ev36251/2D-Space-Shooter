@@ -106,13 +106,14 @@ class UI {
         ctx.fillText(`STAGE ${game.currentStage}`, GameConfig.CANVAS_WIDTH - 20, 30);
 
         // Weapon level with gun icons
-        ctx.fillStyle = Colors.UI_TEXT;
-        ctx.fillText('WEAPON:', GameConfig.CANVAS_WIDTH - 180, 55);
+        ctx.font = '14px "Press Start 2P"';
+        ctx.fillStyle = '#00FF00';
+        ctx.fillText('WEAPON', GameConfig.CANVAS_WIDTH - 145, 55);
 
-        // Draw gun icons based on weapon level
+        // Draw gun icons right after the label
         for (let i = 0; i < 3; i++) {
-            const iconX = GameConfig.CANVAS_WIDTH - 100 + (i * 25);
-            const iconY = 48;
+            const iconX = GameConfig.CANVAS_WIDTH - 65 + (i * 18);
+            const iconY = 43;
 
             if (i < game.player.weaponLevel) {
                 // Active gun icon (filled)
@@ -128,47 +129,49 @@ class UI {
             }
         }
 
-        // Missile count display - single icon with count
-        const missileIconX = GameConfig.CANVAS_WIDTH - 95;
-        const missileIconY = 68;
-
-        // Draw missile icon
+        // Missile count display
+        ctx.font = '14px "Press Start 2P"';
         ctx.fillStyle = '#FF6600';
-        ctx.beginPath();
-        ctx.moveTo(missileIconX + 6, missileIconY);
-        ctx.lineTo(missileIconX + 12, missileIconY + 6);
-        ctx.lineTo(missileIconX + 12, missileIconY + 16);
-        ctx.lineTo(missileIconX, missileIconY + 16);
-        ctx.lineTo(missileIconX, missileIconY + 6);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillText('MISSILES', GameConfig.CANVAS_WIDTH - 145, 80);
+        ctx.textAlign = 'left';
+        ctx.fillText(`x${game.player.missiles}`, GameConfig.CANVAS_WIDTH - 50, 80);
+        ctx.textAlign = 'right';
 
-        // Draw missile count text
-        ctx.font = '16px "Press Start 2P"';
-        ctx.fillStyle = '#FF6600';
-        ctx.fillText(`x${game.player.missiles}`, GameConfig.CANVAS_WIDTH - 78, 82);
-
-        // Shield indicator - single icon with hit count
+        // Shield indicator with hexagons (only when active)
         if (game.player.shieldActive) {
-            const shieldIconX = GameConfig.CANVAS_WIDTH - 95;
-            const shieldIconY = 95;
-
-            // Draw shield icon (hexagon)
             ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.beginPath();
-            ctx.moveTo(shieldIconX + 6, shieldIconY);
-            ctx.lineTo(shieldIconX + 12, shieldIconY + 4);
-            ctx.lineTo(shieldIconX + 12, shieldIconY + 12);
-            ctx.lineTo(shieldIconX + 6, shieldIconY + 16);
-            ctx.lineTo(shieldIconX, shieldIconY + 12);
-            ctx.lineTo(shieldIconX, shieldIconY + 4);
-            ctx.closePath();
-            ctx.fill();
+            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 145, 105);
 
-            // Draw shield hit count
-            ctx.font = '16px "Press Start 2P"';
-            ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.fillText(`x${game.player.shieldHits}`, GameConfig.CANVAS_WIDTH - 78, 109);
+            // Draw 3 hexagonal symbols
+            for (let i = 0; i < 3; i++) {
+                const hexX = GameConfig.CANVAS_WIDTH - 55 + (i * 18);
+                const hexY = 100;
+                const size = 6;
+
+                ctx.beginPath();
+                for (let j = 0; j < 6; j++) {
+                    const angle = (Math.PI / 3) * j - Math.PI / 6;
+                    const x = hexX + size * Math.cos(angle);
+                    const y = hexY + size * Math.sin(angle);
+                    if (j === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+
+                if (i < game.player.shieldHits) {
+                    // Active hexagon (filled)
+                    ctx.fillStyle = Colors.POWERUP_SHIELD;
+                    ctx.fill();
+                } else {
+                    // Used hexagon (outline only)
+                    ctx.strokeStyle = Colors.POWERUP_SHIELD;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
         }
 
         ctx.textAlign = 'left';
