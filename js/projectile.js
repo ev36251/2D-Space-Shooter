@@ -60,12 +60,12 @@ class PlayerLaser extends Projectile {
 // Player missile projectile - does more damage and explodes
 class PlayerMissile extends Projectile {
     constructor(x, y) {
-        super(x, y, 0, -450, 5, true); // Slower but more damage (5 damage)
+        super(x, y, 0, -450, 10, true); // Slower but high damage (10 damage)
         this.sprite = 'playerMissile';
         this.width = 12;
         this.height = 24;
-        this.explosionRadius = 60; // Explosion damages enemies within this radius
-        this.explosionDamage = 3; // Additional damage to nearby enemies
+        this.explosionRadius = 70; // Explosion damages enemies within this radius
+        this.explosionDamage = 6; // Additional damage to nearby enemies
         this.isMissile = true; // Flag to identify as missile for collision handling
     }
 
