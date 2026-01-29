@@ -128,81 +128,47 @@ class UI {
             }
         }
 
-        // Missile count display
+        // Missile count display - single icon with count
+        const missileIconX = GameConfig.CANVAS_WIDTH - 95;
+        const missileIconY = 68;
+
+        // Draw missile icon
+        ctx.fillStyle = '#FF6600';
+        ctx.beginPath();
+        ctx.moveTo(missileIconX + 6, missileIconY);
+        ctx.lineTo(missileIconX + 12, missileIconY + 6);
+        ctx.lineTo(missileIconX + 12, missileIconY + 16);
+        ctx.lineTo(missileIconX, missileIconY + 16);
+        ctx.lineTo(missileIconX, missileIconY + 6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw missile count text
         ctx.font = '16px "Press Start 2P"';
-        ctx.fillStyle = Colors.UI_TEXT;
-        ctx.fillText('MISSILES:', GameConfig.CANVAS_WIDTH - 180, 80);
+        ctx.fillStyle = '#FF6600';
+        ctx.fillText(`x${game.player.missiles}`, GameConfig.CANVAS_WIDTH - 78, 82);
 
-        // Draw missile icons
-        for (let i = 0; i < game.player.maxMissiles; i++) {
-            const iconX = GameConfig.CANVAS_WIDTH - 65 + (i % 3) * 18;
-            const iconY = 68 + Math.floor(i / 3) * 16;
-
-            if (i < game.player.missiles) {
-                // Active missile icon (filled)
-                ctx.fillStyle = '#FF6600';
-                ctx.beginPath();
-                ctx.moveTo(iconX + 4, iconY);
-                ctx.lineTo(iconX + 8, iconY + 4);
-                ctx.lineTo(iconX + 8, iconY + 10);
-                ctx.lineTo(iconX, iconY + 10);
-                ctx.lineTo(iconX, iconY + 4);
-                ctx.closePath();
-                ctx.fill();
-            } else {
-                // Inactive missile icon (outline)
-                ctx.strokeStyle = '#FF6600';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(iconX + 4, iconY);
-                ctx.lineTo(iconX + 8, iconY + 4);
-                ctx.lineTo(iconX + 8, iconY + 10);
-                ctx.lineTo(iconX, iconY + 10);
-                ctx.lineTo(iconX, iconY + 4);
-                ctx.closePath();
-                ctx.stroke();
-            }
-        }
-
-        // Shield indicator
+        // Shield indicator - single icon with hit count
         if (game.player.shieldActive) {
+            const shieldIconX = GameConfig.CANVAS_WIDTH - 95;
+            const shieldIconY = 95;
+
+            // Draw shield icon (hexagon)
             ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.fillText('SHIELD:', GameConfig.CANVAS_WIDTH - 95, 135);
+            ctx.beginPath();
+            ctx.moveTo(shieldIconX + 6, shieldIconY);
+            ctx.lineTo(shieldIconX + 12, shieldIconY + 4);
+            ctx.lineTo(shieldIconX + 12, shieldIconY + 12);
+            ctx.lineTo(shieldIconX + 6, shieldIconY + 16);
+            ctx.lineTo(shieldIconX, shieldIconY + 12);
+            ctx.lineTo(shieldIconX, shieldIconY + 4);
+            ctx.closePath();
+            ctx.fill();
 
-            // Draw shield hit icons (3 total)
-            for (let i = 0; i < 3; i++) {
-                const iconX = GameConfig.CANVAS_WIDTH - 55 + i * 18;
-                const iconY = 122;
-
-                if (i < game.player.shieldHits) {
-                    // Active shield pip (filled hexagon)
-                    ctx.fillStyle = Colors.POWERUP_SHIELD;
-                    ctx.beginPath();
-                    ctx.moveTo(iconX + 6, iconY);
-                    ctx.lineTo(iconX + 12, iconY + 4);
-                    ctx.lineTo(iconX + 12, iconY + 10);
-                    ctx.lineTo(iconX + 6, iconY + 14);
-                    ctx.lineTo(iconX, iconY + 10);
-                    ctx.lineTo(iconX, iconY + 4);
-                    ctx.closePath();
-                    ctx.fill();
-                } else {
-                    // Depleted shield pip (outline only)
-                    ctx.strokeStyle = Colors.POWERUP_SHIELD;
-                    ctx.lineWidth = 1;
-                    ctx.globalAlpha = 0.4;
-                    ctx.beginPath();
-                    ctx.moveTo(iconX + 6, iconY);
-                    ctx.lineTo(iconX + 12, iconY + 4);
-                    ctx.lineTo(iconX + 12, iconY + 10);
-                    ctx.lineTo(iconX + 6, iconY + 14);
-                    ctx.lineTo(iconX, iconY + 10);
-                    ctx.lineTo(iconX, iconY + 4);
-                    ctx.closePath();
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                }
-            }
+            // Draw shield hit count
+            ctx.font = '16px "Press Start 2P"';
+            ctx.fillStyle = Colors.POWERUP_SHIELD;
+            ctx.fillText(`x${game.player.shieldHits}`, GameConfig.CANVAS_WIDTH - 78, 109);
         }
 
         ctx.textAlign = 'left';

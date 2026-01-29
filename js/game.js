@@ -435,14 +435,20 @@ class Game {
     handleNameEntry() {
         // Listen for key presses to build player name
         const keys = this.input.keys;
+        const processedKeys = new Set(); // Track which characters we've already added
 
         for (let key in keys) {
             if (keys[key] && !this.input.lastKeys[key]) {
                 // Key was just pressed
                 if (key.length === 1 && /[A-Za-z0-9 ]/.test(key)) {
+                    // Skip if we already processed this letter (prevents Shift+A adding both 'A' and 'a')
+                    const upperKey = key.toUpperCase();
+                    if (processedKeys.has(upperKey)) continue;
+                    processedKeys.add(upperKey);
+
                     // Add letter, number, or space
                     if (this.playerName.length < 15) {
-                        this.playerName += key.toUpperCase();
+                        this.playerName += upperKey;
                     }
                 } else if (key === 'Backspace') {
                     // Remove last character
