@@ -69,16 +69,17 @@ class Enemy extends GameObject {
 // Stage 1 Enemies
 class BasicDrone extends Enemy {
     constructor(x, y) {
-        super(x, y, 32, 32, 1, GameConfig.SCORE_SMALL_ENEMY);
-        this.velocity.y = 100;
+        super(x, y, 32, 32, 2, GameConfig.SCORE_SMALL_ENEMY); // 2 HP instead of 1
+        this.velocity.y = 130; // Faster movement (was 100)
         this.sprite = 'enemyDrone1';
+        this.fireRate = 1.5; // Shoots more often (was 2.0)
     }
 
     update(deltaTime, game) {
         // Simple downward movement
         this.y += this.velocity.y * deltaTime;
 
-        // Occasional shooting
+        // More frequent shooting
         this.fireTimer += deltaTime;
         if (this.fireTimer > this.fireRate) {
             this.shoot(game);
@@ -92,12 +93,25 @@ class BasicDrone extends Enemy {
     }
 
     shoot(game) {
-        game.enemyProjectiles.push(new EnemyBullet(
-            this.getCenterX(),
-            this.y + this.height,
-            0,
-            1
-        ));
+        // 30% chance to fire aimed shot at player
+        if (Math.random() < 0.3 && game.player.alive) {
+            const dx = game.player.getCenterX() - this.getCenterX();
+            const dy = game.player.getCenterY() - this.getCenterY();
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            game.enemyProjectiles.push(new EnemyBullet(
+                this.getCenterX(),
+                this.y + this.height,
+                dx / dist,
+                dy / dist
+            ));
+        } else {
+            game.enemyProjectiles.push(new EnemyBullet(
+                this.getCenterX(),
+                this.y + this.height,
+                0,
+                1
+            ));
+        }
     }
 
     getColor() {
@@ -107,19 +121,36 @@ class BasicDrone extends Enemy {
 
 class SideDrone extends Enemy {
     constructor(x, y, direction) {
-        super(x, y, 32, 32, 1, GameConfig.SCORE_SMALL_ENEMY);
-        this.velocity.y = 80;
-        this.velocity.x = direction * 60; // Moves diagonally
+        super(x, y, 32, 32, 2, GameConfig.SCORE_SMALL_ENEMY); // 2 HP instead of 1
+        this.velocity.y = 110; // Faster (was 80)
+        this.velocity.x = direction * 90; // Faster diagonal (was 60)
         this.sprite = 'enemyDrone2';
+        this.fireRate = 1.8;
     }
 
     update(deltaTime, game) {
         this.x += this.velocity.x * deltaTime;
         this.y += this.velocity.y * deltaTime;
 
+        // Side drones now shoot too
+        this.fireTimer += deltaTime;
+        if (this.fireTimer > this.fireRate) {
+            this.shoot(game);
+            this.fireTimer = 0;
+        }
+
         if (this.y > GameConfig.CANVAS_HEIGHT || this.x < -this.width || this.x > GameConfig.CANVAS_WIDTH) {
             this.alive = false;
         }
+    }
+
+    shoot(game) {
+        game.enemyProjectiles.push(new EnemyBullet(
+            this.getCenterX(),
+            this.y + this.height,
+            0,
+            1
+        ));
     }
 
     getColor() {

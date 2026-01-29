@@ -3,7 +3,8 @@ const PowerupType = {
     WEAPON: 'weapon',
     SHIELD: 'shield',
     LIFE: 'life',
-    MULTIPLIER: 'multiplier'
+    MULTIPLIER: 'multiplier',
+    MISSILE: 'missile'
 };
 
 // Power-up class
@@ -25,6 +26,7 @@ class Powerup extends GameObject {
             case PowerupType.SHIELD: return 'powerupShield';
             case PowerupType.LIFE: return 'powerupLife';
             case PowerupType.MULTIPLIER: return 'powerupMultiplier';
+            case PowerupType.MISSILE: return 'powerupMissile';
             default: return null;
         }
     }
@@ -35,6 +37,7 @@ class Powerup extends GameObject {
             case PowerupType.SHIELD: return Colors.POWERUP_SHIELD;
             case PowerupType.LIFE: return Colors.POWERUP_LIFE;
             case PowerupType.MULTIPLIER: return '#FFD700';
+            case PowerupType.MISSILE: return '#FF6600';
             default: return '#FFFFFF';
         }
     }
@@ -130,6 +133,24 @@ class Powerup extends GameObject {
                     ctx.closePath();
                     ctx.fill();
                     break;
+
+                case PowerupType.MISSILE:
+                    // Draw missile icon
+                    ctx.beginPath();
+                    // Missile body
+                    ctx.moveTo(0, -10);
+                    ctx.lineTo(4, -6);
+                    ctx.lineTo(4, 6);
+                    ctx.lineTo(7, 10);
+                    ctx.lineTo(-7, 10);
+                    ctx.lineTo(-4, 6);
+                    ctx.lineTo(-4, -6);
+                    ctx.closePath();
+                    ctx.fill();
+                    // Fins
+                    ctx.fillRect(-8, 4, 4, 6);
+                    ctx.fillRect(4, 4, 4, 6);
+                    break;
             }
 
             // Add glow
@@ -161,6 +182,10 @@ class Powerup extends GameObject {
                     game.scoreManager.activateMultiplier(2, 10.0);
                 }
                 break;
+
+            case PowerupType.MISSILE:
+                player.addMissiles(3); // Add 3 missiles
+                break;
         }
     }
 }
@@ -175,17 +200,19 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
         types = [
             PowerupType.SHIELD,
             PowerupType.LIFE,
-            PowerupType.MULTIPLIER
+            PowerupType.MULTIPLIER,
+            PowerupType.MISSILE
         ];
-        weights = [40, 30, 30]; // Redistribute weapon weight to other powerups
+        weights = [30, 25, 20, 25]; // Redistribute weapon weight to other powerups
     } else {
         types = [
             PowerupType.WEAPON,
             PowerupType.SHIELD,
             PowerupType.LIFE,
-            PowerupType.MULTIPLIER
+            PowerupType.MULTIPLIER,
+            PowerupType.MISSILE
         ];
-        weights = [40, 30, 15, 15]; // Weapon most common
+        weights = [35, 25, 12, 12, 16]; // Weapon most common, missiles fairly common
     }
 
     // Weighted random selection

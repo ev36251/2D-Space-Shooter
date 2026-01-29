@@ -57,6 +57,67 @@ class PlayerLaser extends Projectile {
     }
 }
 
+// Player missile projectile - does more damage and explodes
+class PlayerMissile extends Projectile {
+    constructor(x, y) {
+        super(x, y, 0, -450, 5, true); // Slower but more damage (5 damage)
+        this.sprite = 'playerMissile';
+        this.width = 12;
+        this.height = 24;
+        this.explosionRadius = 60; // Explosion damages enemies within this radius
+        this.explosionDamage = 3; // Additional damage to nearby enemies
+        this.isMissile = true; // Flag to identify as missile for collision handling
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Draw missile body
+        ctx.fillStyle = '#FF6600';
+        ctx.beginPath();
+        // Nose cone
+        ctx.moveTo(0, -this.height / 2);
+        ctx.lineTo(this.width / 2, -this.height / 4);
+        ctx.lineTo(this.width / 2, this.height / 3);
+        // Fins
+        ctx.lineTo(this.width * 0.8, this.height / 2);
+        ctx.lineTo(this.width / 4, this.height / 3);
+        ctx.lineTo(-this.width / 4, this.height / 3);
+        ctx.lineTo(-this.width * 0.8, this.height / 2);
+        ctx.lineTo(-this.width / 2, this.height / 3);
+        ctx.lineTo(-this.width / 2, -this.height / 4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Nose highlight
+        ctx.fillStyle = '#FFAA00';
+        ctx.beginPath();
+        ctx.moveTo(0, -this.height / 2);
+        ctx.lineTo(this.width / 4, -this.height / 4);
+        ctx.lineTo(-this.width / 4, -this.height / 4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Engine glow
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.arc(0, this.height / 3, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#FF6600';
+        ctx.fillStyle = '#FF8800';
+        ctx.fillRect(-2, this.height / 3, 4, 8);
+        ctx.shadowBlur = 0;
+
+        ctx.restore();
+    }
+}
+
 // Enemy bullet projectile
 class EnemyBullet extends Projectile {
     constructor(x, y, targetX = 0, targetY = 1) {

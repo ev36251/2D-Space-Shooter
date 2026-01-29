@@ -168,6 +168,91 @@ class BattlecruiserBoss extends Boss {
         this.name = 'BATTLECRUISER';
         this.sprite = 'boss2';
         this.fireRate = 1.0;
+        this.pulseTimer = 0;
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+
+        this.pulseTimer += 0.05;
+        const pulse = Math.sin(this.pulseTimer) * 0.1 + 0.9;
+
+        ctx.save();
+        ctx.translate(this.getCenterX(), this.getCenterY());
+
+        // Main hull - angular battleship shape
+        ctx.fillStyle = '#4A0080';
+        ctx.beginPath();
+        // Front point
+        ctx.moveTo(0, -this.height / 2);
+        // Right side angles
+        ctx.lineTo(this.width * 0.3, -this.height * 0.3);
+        ctx.lineTo(this.width * 0.5, -this.height * 0.1);
+        ctx.lineTo(this.width * 0.5, this.height * 0.3);
+        ctx.lineTo(this.width * 0.3, this.height * 0.5);
+        // Back
+        ctx.lineTo(-this.width * 0.3, this.height * 0.5);
+        // Left side angles
+        ctx.lineTo(-this.width * 0.5, this.height * 0.3);
+        ctx.lineTo(-this.width * 0.5, -this.height * 0.1);
+        ctx.lineTo(-this.width * 0.3, -this.height * 0.3);
+        ctx.closePath();
+        ctx.fill();
+
+        // Hull detail stripes
+        ctx.strokeStyle = '#8800FF';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Central command tower
+        ctx.fillStyle = '#6B00B3';
+        ctx.fillRect(-30, -20, 60, 50);
+        ctx.strokeStyle = '#AA00FF';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-30, -20, 60, 50);
+
+        // Engine glow (back)
+        const engineGlow = ctx.createRadialGradient(0, this.height * 0.4, 5, 0, this.height * 0.4, 40);
+        engineGlow.addColorStop(0, `rgba(255, 100, 255, ${pulse})`);
+        engineGlow.addColorStop(1, 'rgba(128, 0, 255, 0)');
+        ctx.fillStyle = engineGlow;
+        ctx.beginPath();
+        ctx.arc(-40, this.height * 0.4, 25, 0, Math.PI * 2);
+        ctx.arc(40, this.height * 0.4, 25, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Weapon turrets (glowing)
+        const turretGlow = `rgba(255, 0, 100, ${0.5 + pulse * 0.3})`;
+        ctx.fillStyle = turretGlow;
+        ctx.beginPath();
+        ctx.arc(-60, 0, 12, 0, Math.PI * 2);
+        ctx.arc(60, 0, 12, 0, Math.PI * 2);
+        ctx.arc(0, -40, 15, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Turret cores
+        ctx.fillStyle = '#FF0066';
+        ctx.beginPath();
+        ctx.arc(-60, 0, 6, 0, Math.PI * 2);
+        ctx.arc(60, 0, 6, 0, Math.PI * 2);
+        ctx.arc(0, -40, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Phase indicator lights
+        const phaseColor = this.phase === 3 ? '#FF0000' : this.phase === 2 ? '#FFAA00' : '#00FF00';
+        ctx.fillStyle = phaseColor;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = phaseColor;
+        ctx.beginPath();
+        ctx.arc(-20, 10, 5, 0, Math.PI * 2);
+        ctx.arc(20, 10, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.restore();
+
+        // Boss health bar
+        this.renderBossHealthBar(ctx);
     }
 
     update(deltaTime, game) {
@@ -262,6 +347,129 @@ class CommandShipBoss extends Boss {
         this.fireRate = 0.8;
         this.specialAttackTimer = 0;
         this.specialAttackRate = 5.0;
+        this.pulseTimer = 0;
+        this.rotationAngle = 0;
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+
+        this.pulseTimer += 0.03;
+        this.rotationAngle += 0.02;
+        const pulse = Math.sin(this.pulseTimer) * 0.15 + 0.85;
+
+        ctx.save();
+        ctx.translate(this.getCenterX(), this.getCenterY());
+
+        // Outer ring (rotating)
+        ctx.save();
+        ctx.rotate(this.rotationAngle);
+        ctx.strokeStyle = `rgba(0, 255, 200, ${pulse * 0.5})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.width * 0.48, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Ring segments
+        for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 * i) / 8;
+            ctx.fillStyle = '#00FFAA';
+            ctx.beginPath();
+            ctx.arc(Math.cos(angle) * this.width * 0.45, Math.sin(angle) * this.width * 0.45, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // Main body - hexagonal command ship
+        ctx.fillStyle = '#001133';
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
+            const x = Math.cos(angle) * this.width * 0.38;
+            const y = Math.sin(angle) * this.height * 0.38;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        // Hull outline
+        ctx.strokeStyle = '#0088FF';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Inner hexagon
+        ctx.fillStyle = '#002255';
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
+            const x = Math.cos(angle) * this.width * 0.25;
+            const y = Math.sin(angle) * this.height * 0.25;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#00AAFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Central core (pulsing based on phase)
+        const coreColor = this.phase === 3 ? '#FF0000' : this.phase === 2 ? '#FF6600' : '#00FFFF';
+        const coreGlow = ctx.createRadialGradient(0, 0, 5, 0, 0, 40);
+        coreGlow.addColorStop(0, coreColor);
+        coreGlow.addColorStop(0.5, `rgba(${this.phase === 3 ? '255,0,0' : this.phase === 2 ? '255,100,0' : '0,255,255'}, ${pulse})`);
+        coreGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = coreGlow;
+        ctx.beginPath();
+        ctx.arc(0, 0, 40 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core center
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(0, 0, 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Weapon pods at each hexagon vertex
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
+            const x = Math.cos(angle) * this.width * 0.38;
+            const y = Math.sin(angle) * this.height * 0.38;
+
+            // Pod glow
+            ctx.fillStyle = `rgba(255, 50, 50, ${0.3 + pulse * 0.4})`;
+            ctx.beginPath();
+            ctx.arc(x, y, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pod core
+            ctx.fillStyle = '#FF3333';
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pod center
+            ctx.fillStyle = '#FFAAAA';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Engine exhausts (bottom corners)
+        const exhaustGlow = ctx.createRadialGradient(0, this.height * 0.35, 5, 0, this.height * 0.35, 50);
+        exhaustGlow.addColorStop(0, `rgba(0, 150, 255, ${pulse})`);
+        exhaustGlow.addColorStop(1, 'rgba(0, 50, 150, 0)');
+        ctx.fillStyle = exhaustGlow;
+        ctx.beginPath();
+        ctx.arc(-50, this.height * 0.35, 35, 0, Math.PI * 2);
+        ctx.arc(50, this.height * 0.35, 35, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        // Boss health bar
+        this.renderBossHealthBar(ctx);
     }
 
     update(deltaTime, game) {

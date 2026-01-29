@@ -35,7 +35,8 @@ class UI {
         ctx.fillStyle = '#FFFFFF';
         ctx.fillText('Arrow Keys / WASD - Move', GameConfig.CANVAS_WIDTH / 2, 320);
         ctx.fillText('SPACEBAR - Shoot', GameConfig.CANVAS_WIDTH / 2, 350);
-        ctx.fillText('P / ESC - Pause', GameConfig.CANVAS_WIDTH / 2, 380);
+        ctx.fillText('SHIFT - Fire Missile', GameConfig.CANVAS_WIDTH / 2, 380);
+        ctx.fillText('P / ESC - Pause', GameConfig.CANVAS_WIDTH / 2, 410);
 
         // Press Enter to start (blinking)
         if (this.blinkState) {
@@ -127,10 +128,46 @@ class UI {
             }
         }
 
+        // Missile count display
+        ctx.font = '16px "Press Start 2P"';
+        ctx.fillStyle = Colors.UI_TEXT;
+        ctx.fillText('MISSILES:', GameConfig.CANVAS_WIDTH - 180, 80);
+
+        // Draw missile icons
+        for (let i = 0; i < game.player.maxMissiles; i++) {
+            const iconX = GameConfig.CANVAS_WIDTH - 65 + (i % 3) * 18;
+            const iconY = 68 + Math.floor(i / 3) * 16;
+
+            if (i < game.player.missiles) {
+                // Active missile icon (filled)
+                ctx.fillStyle = '#FF6600';
+                ctx.beginPath();
+                ctx.moveTo(iconX + 4, iconY);
+                ctx.lineTo(iconX + 8, iconY + 4);
+                ctx.lineTo(iconX + 8, iconY + 10);
+                ctx.lineTo(iconX, iconY + 10);
+                ctx.lineTo(iconX, iconY + 4);
+                ctx.closePath();
+                ctx.fill();
+            } else {
+                // Inactive missile icon (outline)
+                ctx.strokeStyle = '#FF6600';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(iconX + 4, iconY);
+                ctx.lineTo(iconX + 8, iconY + 4);
+                ctx.lineTo(iconX + 8, iconY + 10);
+                ctx.lineTo(iconX, iconY + 10);
+                ctx.lineTo(iconX, iconY + 4);
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
         // Shield indicator
         if (game.player.shieldActive) {
             ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 20, 80);
+            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 20, 120);
         }
 
         ctx.textAlign = 'left';

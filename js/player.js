@@ -16,6 +16,10 @@ class Player extends GameObject {
         this.trailTimer = 0;
         this.shieldActive = false;
         this.shieldHits = 0; // Shield lasts for 3 hits
+        this.missiles = 0; // Missile ammo count
+        this.maxMissiles = 9; // Maximum missiles player can hold
+        this.missileFireTimer = 0;
+        this.missileFireRate = 0.5; // Can fire a missile every 0.5 seconds
     }
 
     update(deltaTime, input, game) {
@@ -26,6 +30,9 @@ class Player extends GameObject {
 
         // Handle shooting
         this.handleShooting(deltaTime, input, game);
+
+        // Handle missile firing
+        this.handleMissileFiring(deltaTime, input, game);
 
         // Update invincibility
         if (this.invincible) {
@@ -81,6 +88,35 @@ class Player extends GameObject {
             this.shoot(game);
             this.fireTimer = 0;
         }
+    }
+
+    handleMissileFiring(deltaTime, input, game) {
+        this.missileFireTimer += deltaTime;
+
+        if (input.isMissilePressed() && this.missiles > 0 && this.missileFireTimer >= this.missileFireRate) {
+            this.fireMissile(game);
+            this.missileFireTimer = 0;
+        }
+    }
+
+    fireMissile(game) {
+        if (this.missiles <= 0) return;
+
+        this.missiles--;
+
+        const centerX = this.getCenterX();
+        const topY = this.y;
+
+        game.playerProjectiles.push(new PlayerMissile(centerX, topY));
+
+        // Play missile sound (use a different sound if available)
+        if (game.audioManager) {
+            game.audioManager.playSound('playerShoot');
+        }
+    }
+
+    addMissiles(count) {
+        this.missiles = Math.min(this.missiles + count, this.maxMissiles);
     }
 
     shoot(game) {
@@ -220,5 +256,7 @@ class Player extends GameObject {
         this.invincibleTimer = 0;
         this.shieldActive = false;
         this.fireRate = GameConfig.PLAYER_FIRE_RATE;
+        this.missiles = 0;
+        this.missileFireTimer = 0;
     }
 }

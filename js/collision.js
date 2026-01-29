@@ -68,6 +68,11 @@ class CollisionSystem {
                     projectile.alive = false;
                     enemy.takeDamage(projectile.damage);
 
+                    // Handle missile explosion
+                    if (projectile.isMissile) {
+                        this.createMissileExplosion(game, projectile.x, projectile.y, projectile.explosionRadius, projectile.explosionDamage);
+                    }
+
                     if (!enemy.alive) {
                         game.onEnemyDestroyed(enemy);
                     }
@@ -83,11 +88,61 @@ class CollisionSystem {
                     projectile.alive = false;
                     game.boss.takeDamage(projectile.damage);
 
+                    // Handle missile explosion
+                    if (projectile.isMissile) {
+                        this.createMissileExplosion(game, projectile.x, projectile.y, projectile.explosionRadius, projectile.explosionDamage);
+                    }
+
                     if (!game.boss.alive) {
                         game.onBossDestroyed(game.boss);
                     }
 
                     game.createHitEffect(projectile.x, projectile.y);
+                }
+            }
+        }
+    }
+
+    // Create missile explosion that damages nearby enemies
+    createMissileExplosion(game, x, y, radius, damage) {
+        // Create large explosion visual
+        game.particleSystem.createExplosion(x, y, 'large');
+
+        // Play explosion sound
+        if (game.audioManager) {
+            game.audioManager.playSound('enemyExplode');
+        }
+
+        // Damage all enemies within explosion radius
+        for (let enemy of game.enemies) {
+            if (!enemy.alive) continue;
+
+            const dx = enemy.getCenterX() - x;
+            const dy = enemy.getCenterY() - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < radius) {
+                enemy.takeDamage(damage);
+                game.createHitEffect(enemy.getCenterX(), enemy.getCenterY());
+
+                if (!enemy.alive) {
+                    game.onEnemyDestroyed(enemy);
+                }
+            }
+        }
+
+        // Also damage boss if within range
+        if (game.boss && game.boss.alive) {
+            const dx = game.boss.getCenterX() - x;
+            const dy = game.boss.getCenterY() - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < radius) {
+                game.boss.takeDamage(damage);
+                game.createHitEffect(game.boss.getCenterX(), game.boss.getCenterY());
+
+                if (!game.boss.alive) {
+                    game.onBossDestroyed(game.boss);
                 }
             }
         }

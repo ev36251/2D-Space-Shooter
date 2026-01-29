@@ -15,7 +15,7 @@ class Stage {
 
     getSpawnInterval() {
         switch (this.number) {
-            case 1: return 1.5; // Slow spawning
+            case 1: return 1.1; // Faster spawning for harder stage 1
             case 2: return 1.0; // Medium spawning
             case 3: return 0.7; // Fast spawning
             default: return 1.5;

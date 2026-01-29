@@ -12,7 +12,7 @@ class InputHandler {
             this.keys[e.key.toLowerCase()] = true;
 
             // Prevent default browser behavior for game keys
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Escape', 'p', 'P'].includes(e.key)) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Escape', 'p', 'P', 'Shift'].includes(e.key)) {
                 e.preventDefault();
             }
         });
@@ -51,6 +51,10 @@ class InputHandler {
 
     isShootPressed() {
         return this.isKeyPressed(' ') || this.isKeyPressed('Spacebar');
+    }
+
+    isMissilePressed() {
+        return this.isKeyPressed('Shift');
     }
 
     isPausePressed() {
