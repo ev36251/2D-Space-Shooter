@@ -10,6 +10,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 
 - **Arrow Keys / WASD** - Move your ship
 - **SPACEBAR** - Shoot
+- **SHIFT** - Fire Missile (when you have missiles)
 - **P / ESC** - Pause game
 - **LEFT/RIGHT** (in pause) - Adjust music volume
 - **UP/DOWN** (in pause) - Adjust SFX volume
@@ -20,6 +21,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 - **Epic Boss Battles** at the end of each stage
 - **Power-ups System**:
   - 🔫 Weapon Upgrades (up to triple shot)
+  - 🚀 Missiles (explosive damage, press SHIFT to fire)
   - 🛡️ Shield (absorbs 3 hits)
   - ❤️ Health Restore (+25 HP)
   - ⭐ Score Multiplier (2x for 10 seconds)
