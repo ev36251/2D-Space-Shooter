@@ -109,11 +109,11 @@ class UI {
         ctx.textAlign = 'left';
         ctx.font = '12px "Press Start 2P"';
         ctx.fillStyle = '#00FF00';
-        ctx.fillText('WEAPON', GameConfig.CANVAS_WIDTH - 175, 55);
+        ctx.fillText('WEAPON', GameConfig.CANVAS_WIDTH - 140, 55);
 
-        // Draw gun icons (keep position)
+        // Draw gun icons right after text
         for (let i = 0; i < 3; i++) {
-            const iconX = GameConfig.CANVAS_WIDTH - 65 + (i * 10);
+            const iconX = GameConfig.CANVAS_WIDTH - 50 + (i * 10);
             const iconY = 45;
 
             if (i < game.player.weaponLevel) {
@@ -133,16 +133,16 @@ class UI {
         // Missile count display
         ctx.font = '12px "Press Start 2P"';
         ctx.fillStyle = '#FF6600';
-        ctx.fillText('MISSILES x' + game.player.missiles, GameConfig.CANVAS_WIDTH - 175, 75);
+        ctx.fillText('MISSILES x' + game.player.missiles, GameConfig.CANVAS_WIDTH - 140, 75);
 
         // Shield indicator with hexagons (always show label)
         ctx.fillStyle = Colors.POWERUP_SHIELD;
-        ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 175, 95);
+        ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 140, 95);
 
         // Draw 3 hexagonal symbols when shield is active
         if (game.player.shieldActive) {
             for (let i = 0; i < 3; i++) {
-                const hexX = GameConfig.CANVAS_WIDTH - 65 + (i * 10);
+                const hexX = GameConfig.CANVAS_WIDTH - 50 + (i * 10);
                 const hexY = 91;
                 const size = 5;
 
@@ -177,7 +177,7 @@ class UI {
             const timeLeft = Math.ceil(game.player.speedBoostDuration - game.player.speedBoostTimer);
             ctx.fillStyle = '#00FFFF';
             ctx.font = '12px "Press Start 2P"';
-            ctx.fillText('SPEED ' + timeLeft + 's', GameConfig.CANVAS_WIDTH - 175, 115);
+            ctx.fillText('SPEED ' + timeLeft + 's', GameConfig.CANVAS_WIDTH - 140, 115);
         }
 
         ctx.textAlign = 'left';

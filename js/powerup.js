@@ -234,7 +234,7 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [25, 15, 20, 25, 15]; // Shield 25%, Life 15%, Multiplier 20%, Missile 25%, Speed 15%
+        weights = [25, 20, 15, 25, 15]; // Shield 25%, Life 20%, Multiplier 15%, Missile 25%, Speed 15%
     } else {
         types = [
             PowerupType.WEAPON,
@@ -244,7 +244,7 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [20, 20, 10, 15, 20, 15]; // Weapon 20%, Shield 20%, Life 10%, Multiplier 15%, Missile 20%, Speed 15%
+        weights = [20, 20, 15, 10, 20, 15]; // Weapon 20%, Shield 20%, Life 15%, Multiplier 10%, Missile 20%, Speed 15%
     }
 
     // Filter out the last spawned type to prevent consecutive duplicates
