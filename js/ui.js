@@ -167,7 +167,42 @@ class UI {
         // Shield indicator
         if (game.player.shieldActive) {
             ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 20, 135);
+            ctx.fillText('SHIELD:', GameConfig.CANVAS_WIDTH - 95, 135);
+
+            // Draw shield hit icons (3 total)
+            for (let i = 0; i < 3; i++) {
+                const iconX = GameConfig.CANVAS_WIDTH - 55 + i * 18;
+                const iconY = 122;
+
+                if (i < game.player.shieldHits) {
+                    // Active shield pip (filled hexagon)
+                    ctx.fillStyle = Colors.POWERUP_SHIELD;
+                    ctx.beginPath();
+                    ctx.moveTo(iconX + 6, iconY);
+                    ctx.lineTo(iconX + 12, iconY + 4);
+                    ctx.lineTo(iconX + 12, iconY + 10);
+                    ctx.lineTo(iconX + 6, iconY + 14);
+                    ctx.lineTo(iconX, iconY + 10);
+                    ctx.lineTo(iconX, iconY + 4);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    // Depleted shield pip (outline only)
+                    ctx.strokeStyle = Colors.POWERUP_SHIELD;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.4;
+                    ctx.beginPath();
+                    ctx.moveTo(iconX + 6, iconY);
+                    ctx.lineTo(iconX + 12, iconY + 4);
+                    ctx.lineTo(iconX + 12, iconY + 10);
+                    ctx.lineTo(iconX + 6, iconY + 14);
+                    ctx.lineTo(iconX, iconY + 10);
+                    ctx.lineTo(iconX, iconY + 4);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
         }
 
         ctx.textAlign = 'left';
