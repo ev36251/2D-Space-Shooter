@@ -167,7 +167,7 @@ class UI {
         // Shield indicator
         if (game.player.shieldActive) {
             ctx.fillStyle = Colors.POWERUP_SHIELD;
-            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 20, 120);
+            ctx.fillText('SHIELD', GameConfig.CANVAS_WIDTH - 20, 135);
         }
 
         ctx.textAlign = 'left';

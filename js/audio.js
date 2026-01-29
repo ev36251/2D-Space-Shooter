@@ -8,21 +8,37 @@ class AudioManager {
         this.musicVolume = 0.3;
         this.sfxVolume = 0.5;
         this.initialized = false;
+        this.loopCount = 0; // Track loop count for limited-loop tracks
     }
 
-    loadSound(name, path, isMusic = false, volumeMultiplier = 1.0) {
+    loadSound(name, path, isMusic = false, volumeMultiplier = 1.0, maxLoops = 0) {
         const audio = new Audio(path);
         audio.volume = isMusic ? this.musicVolume * volumeMultiplier : this.sfxVolume;
 
-        if (isMusic) {
+        // Only set infinite loop if maxLoops is 0 (unlimited)
+        if (isMusic && maxLoops === 0) {
             audio.loop = true;
         }
 
         this.sounds[name] = {
             audio: audio,
             isMusic: isMusic,
-            volumeMultiplier: volumeMultiplier
+            volumeMultiplier: volumeMultiplier,
+            maxLoops: maxLoops
         };
+
+        // Set up limited loop handler if maxLoops > 0
+        if (isMusic && maxLoops > 0) {
+            audio.addEventListener('ended', () => {
+                if (this.currentMusic === name) {
+                    this.loopCount++;
+                    if (this.loopCount < maxLoops) {
+                        audio.currentTime = 0;
+                        audio.play().catch(() => {});
+                    }
+                }
+            });
+        }
     }
 
     playSound(name) {
@@ -57,6 +73,7 @@ class AudioManager {
         }
 
         this.currentMusic = name;
+        this.loopCount = 0; // Reset loop count for limited-loop tracks
         sound.audio.currentTime = 0;
         sound.audio.volume = this.musicVolume * (sound.volumeMultiplier || 1.0);
 
@@ -134,10 +151,10 @@ class AudioManager {
         this.loadSound('stage1Theme', 'assets/audio/music/stage-1-theme.mp3', true);
         this.loadSound('stage2Theme', 'assets/audio/music/stage-2-theme.mp3', true);
         this.loadSound('stage3Theme', 'assets/audio/music/stage-3-theme.ogg', true);
-        this.loadSound('bossTheme', 'assets/audio/music/boss-theme.wav', true, 0.5); // Play at 50% volume
+        this.loadSound('bossTheme', 'assets/audio/music/boss-theme.wav', true, 0.3); // Play at 30% volume
         this.loadSound('victoryTheme', 'assets/audio/music/victory.mp3', true); // Victory music after stages 1 & 2
         this.loadSound('superVictoryTheme', 'assets/audio/music/super-victory.mp3', true); // Victory music after stage 3
-        this.loadSound('loseTheme', 'assets/audio/music/lose.mp3', true); // Game over music
+        this.loadSound('loseTheme', 'assets/audio/music/lose.mp3', true, 1.0, 1); // Game over music - plays once
 
         // Sound effects
         this.loadSound('playerShoot', 'assets/audio/sfx/player-shoot.wav', false);
