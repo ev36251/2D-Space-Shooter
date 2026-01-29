@@ -236,6 +236,10 @@ class Game {
     start() {
         this.running = true;
         this.lastTime = performance.now();
+        // Play menu theme on game start
+        if (this.audioManager) {
+            this.audioManager.playMusic('menuTheme');
+        }
         this.gameLoop(this.lastTime);
     }
 
