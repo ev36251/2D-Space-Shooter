@@ -687,7 +687,8 @@ class Game {
             // Victory!
             this.onVictory();
         } else {
-            // Next stage
+            // Next stage - restore player health to full
+            this.player.health = this.player.maxHealth;
             this.clearAllObjects();
             this.setTimedState(GameState.STAGE_TRANSITION, 2.0);
         }
