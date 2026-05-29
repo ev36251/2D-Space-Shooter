@@ -448,3 +448,359 @@ class ShieldedCarrier extends Enemy {
         }
     }
 }
+
+// ─── Stage 4 Enemies ───────────────────────────────────────────────────────
+
+// Fast elite attacker - weaves side to side and fires rapid aimed bursts
+class VoidStriker extends Enemy {
+    constructor(x, y) {
+        super(x, y, 38, 38, 7, GameConfig.SCORE_LARGE_ENEMY);
+        this.velocity.y = 170;
+        this.sprite = 'enemyVoidStriker';
+        this.fireRate = 0.9;
+        this.burstCount = 0;
+        this.burstMax = 3;
+        this.burstTimer = 0;
+        this.burstFiring = false;
+    }
+
+    update(deltaTime, game) {
+        this.movementTimer += deltaTime;
+        this.x += Math.sin(this.movementTimer * 3.5) * 130 * deltaTime;
+        this.y += this.velocity.y * deltaTime;
+
+        this.fireTimer += deltaTime;
+        if (this.fireTimer > this.fireRate && !this.burstFiring) {
+            this.burstFiring = true;
+            this.burstCount = 0;
+            this.burstTimer = 0;
+            this.fireTimer = 0;
+        }
+
+        if (this.burstFiring) {
+            this.burstTimer += deltaTime;
+            if (this.burstTimer > 0.12) {
+                this.shoot(game);
+                this.burstCount++;
+                this.burstTimer = 0;
+                if (this.burstCount >= this.burstMax) {
+                    this.burstFiring = false;
+                }
+            }
+        }
+
+        if (this.y > GameConfig.CANVAS_HEIGHT) this.alive = false;
+    }
+
+    shoot(game) {
+        if (!game.player.alive) return;
+        const dx = game.player.getCenterX() - this.getCenterX();
+        const dy = game.player.getCenterY() - this.getCenterY();
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        game.enemyProjectiles.push(new EnemyBulletFast(
+            this.getCenterX(), this.y + this.height,
+            dx / dist, dy / dist
+        ));
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        if (this.sprite && assets.images[this.sprite]) {
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            ctx.rotate(Math.PI); // flip to face down
+            ctx.drawImage(assets.images[this.sprite], -this.width / 2, -this.height / 2, this.width, this.height);
+            ctx.restore();
+        } else {
+            // Procedural: sleek angular void fighter
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            ctx.fillStyle = '#220033';
+            ctx.beginPath();
+            ctx.moveTo(0, this.height / 2);
+            ctx.lineTo(-this.width * 0.45, -this.height * 0.35);
+            ctx.lineTo(-this.width * 0.15, -this.height * 0.1);
+            ctx.lineTo(0, -this.height / 2);
+            ctx.lineTo(this.width * 0.15, -this.height * 0.1);
+            ctx.lineTo(this.width * 0.45, -this.height * 0.35);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#AA00FF';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // Engine glow
+            ctx.fillStyle = 'rgba(180, 0, 255, 0.7)';
+            ctx.beginPath();
+            ctx.arc(-this.width * 0.3, -this.height * 0.3, 5, 0, Math.PI * 2);
+            ctx.arc(this.width * 0.3, -this.height * 0.3, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            if (this.health < this.maxHealth) this.renderHealthBar(ctx);
+        }
+    }
+
+    getColor() { return '#AA00FF'; }
+}
+
+// Slow heavy armored ship that fires large damaging plasma bolts
+class PlasmaCruiser extends Enemy {
+    constructor(x, y) {
+        super(x, y, 54, 54, 14, GameConfig.SCORE_LARGE_ENEMY);
+        this.velocity.y = 55;
+        this.sprite = 'enemyPlasmaCruiser';
+        this.fireRate = 1.8;
+        this.chargeTimer = 0;
+        this.charging = false;
+    }
+
+    update(deltaTime, game) {
+        this.movementTimer += deltaTime;
+        this.x += Math.sin(this.movementTimer * 1.2) * 60 * deltaTime;
+        this.y += this.velocity.y * deltaTime;
+
+        this.fireTimer += deltaTime;
+        if (this.fireTimer > this.fireRate) {
+            this.shoot(game);
+            this.fireTimer = 0;
+        }
+
+        if (this.y > GameConfig.CANVAS_HEIGHT) this.alive = false;
+    }
+
+    shoot(game) {
+        if (!game.player.alive) return;
+        const dx = game.player.getCenterX() - this.getCenterX();
+        const dy = game.player.getCenterY() - this.getCenterY();
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        // Fire a wide slow plasma shot and two side shots
+        game.enemyProjectiles.push(new PlasmaBolt(
+            this.getCenterX(), this.y + this.height,
+            dx / dist * 0.7, dy / dist * 0.7
+        ));
+        game.enemyProjectiles.push(new EnemyBullet(
+            this.getCenterX() - 18, this.y + this.height, -0.3, 1
+        ));
+        game.enemyProjectiles.push(new EnemyBullet(
+            this.getCenterX() + 18, this.y + this.height, 0.3, 1
+        ));
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        if (this.sprite && assets.images[this.sprite]) {
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            ctx.rotate(Math.PI);
+            ctx.drawImage(assets.images[this.sprite], -this.width / 2, -this.height / 2, this.width, this.height);
+            ctx.restore();
+        } else {
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            // Heavy angular hull
+            ctx.fillStyle = '#1a0011';
+            ctx.beginPath();
+            ctx.moveTo(0, this.height / 2);
+            ctx.lineTo(-this.width * 0.5, this.height * 0.1);
+            ctx.lineTo(-this.width * 0.5, -this.height * 0.25);
+            ctx.lineTo(-this.width * 0.2, -this.height / 2);
+            ctx.lineTo(this.width * 0.2, -this.height / 2);
+            ctx.lineTo(this.width * 0.5, -this.height * 0.25);
+            ctx.lineTo(this.width * 0.5, this.height * 0.1);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#FF0066';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // Plasma cannon glow
+            ctx.fillStyle = 'rgba(255, 0, 100, 0.8)';
+            ctx.beginPath();
+            ctx.arc(0, this.height * 0.2, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FF88BB';
+            ctx.beginPath();
+            ctx.arc(0, this.height * 0.2, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            if (this.health < this.maxHealth) this.renderHealthBar(ctx);
+        }
+    }
+
+    getColor() { return '#FF0066'; }
+}
+
+// Elite carrier that spawns VoidStrikers and fires heavy spread
+class VoidCarrierElite extends Enemy {
+    constructor(x, y) {
+        super(x, y, 72, 72, 18, GameConfig.SCORE_LARGE_ENEMY);
+        this.velocity.y = 40;
+        this.sprite = 'enemyEliteCarrier';
+        this.fireRate = 2.0;
+        this.spawnTimer = 0;
+        this.spawnRate = 5.0;
+        this.pulseTimer = 0;
+    }
+
+    update(deltaTime, game) {
+        this.pulseTimer += deltaTime;
+        this.movementTimer += deltaTime;
+        this.x += Math.sin(this.movementTimer * 0.8) * 50 * deltaTime;
+        this.y += this.velocity.y * deltaTime;
+
+        this.spawnTimer += deltaTime;
+        if (this.spawnTimer > this.spawnRate && this.y > 60 && this.y < GameConfig.CANVAS_HEIGHT - 120) {
+            this.spawnMinion(game);
+            this.spawnTimer = 0;
+        }
+
+        this.fireTimer += deltaTime;
+        if (this.fireTimer > this.fireRate) {
+            this.shoot(game);
+            this.fireTimer = 0;
+        }
+
+        if (this.y > GameConfig.CANVAS_HEIGHT) this.alive = false;
+    }
+
+    spawnMinion(game) {
+        game.enemies.push(new VoidStriker(this.getCenterX() - 25, this.y + 10));
+        game.enemies.push(new VoidStriker(this.getCenterX() + 25, this.y + 10));
+    }
+
+    shoot(game) {
+        for (let i = -2; i <= 2; i++) {
+            game.enemyProjectiles.push(new EnemyBulletFast(
+                this.getCenterX() + i * 12,
+                this.y + this.height,
+                i * 0.3,
+                1
+            ));
+        }
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        if (this.sprite && assets.images[this.sprite]) {
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            ctx.rotate(Math.PI);
+            ctx.drawImage(assets.images[this.sprite], -this.width / 2, -this.height / 2, this.width, this.height);
+            ctx.restore();
+        } else {
+            const pulse = Math.sin(this.pulseTimer * 3) * 0.2 + 0.8;
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            // Carrier hull
+            ctx.fillStyle = '#110022';
+            ctx.beginPath();
+            ctx.moveTo(0, -this.height / 2);
+            ctx.lineTo(this.width * 0.5, -this.height * 0.2);
+            ctx.lineTo(this.width * 0.5, this.height * 0.4);
+            ctx.lineTo(this.width * 0.2, this.height / 2);
+            ctx.lineTo(-this.width * 0.2, this.height / 2);
+            ctx.lineTo(-this.width * 0.5, this.height * 0.4);
+            ctx.lineTo(-this.width * 0.5, -this.height * 0.2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#8800FF';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // Hangar bays
+            ctx.fillStyle = `rgba(150, 0, 255, ${pulse * 0.5})`;
+            ctx.fillRect(-28, -8, 20, 16);
+            ctx.fillRect(8, -8, 20, 16);
+            // Core
+            ctx.fillStyle = `rgba(200, 50, 255, ${pulse})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            if (this.health < this.maxHealth) this.renderHealthBar(ctx);
+        }
+    }
+
+    getColor() { return '#8800FF'; }
+}
+
+// Relentless pursuer - tracks the player and fires homing missiles on approach
+class DeathRaider extends Enemy {
+    constructor(x, y, player) {
+        super(x, y, 32, 32, 5, GameConfig.SCORE_MEDIUM_ENEMY);
+        this.sprite = 'enemyDeathRaider';
+        this.player = player;
+        this.speed = 160;
+        this.missileTimer = 0;
+        this.missileRate = 2.5;
+        this.trackingStrength = 140; // how hard it steers toward player
+    }
+
+    update(deltaTime, game) {
+        if (game.player.alive) {
+            const dx = game.player.getCenterX() - this.getCenterX();
+            const dy = game.player.getCenterY() - this.getCenterY();
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 0) {
+                this.velocity.x += (dx / dist) * this.trackingStrength * deltaTime;
+                this.velocity.y += (dy / dist) * this.trackingStrength * deltaTime;
+            }
+        }
+        // Cap speed
+        const spd = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
+        if (spd > this.speed) {
+            this.velocity.x = (this.velocity.x / spd) * this.speed;
+            this.velocity.y = (this.velocity.y / spd) * this.speed;
+        }
+        this.x += this.velocity.x * deltaTime;
+        this.y += this.velocity.y * deltaTime;
+
+        this.missileTimer += deltaTime;
+        if (this.missileTimer > this.missileRate && this.y > 0) {
+            this.shoot(game);
+            this.missileTimer = 0;
+        }
+
+        if (this.isOffScreen(GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT + 50)) this.alive = false;
+    }
+
+    shoot(game) {
+        if (!game.player.alive) return;
+        game.enemyProjectiles.push(new EnemyMissile(
+            this.getCenterX(), this.y + this.height
+        ));
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        if (this.sprite && assets.images[this.sprite]) {
+            const angle = Math.atan2(this.velocity.y, this.velocity.x) - Math.PI / 2;
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            ctx.rotate(angle);
+            ctx.drawImage(assets.images[this.sprite], -this.width / 2, -this.height / 2, this.width, this.height);
+            ctx.restore();
+        } else {
+            ctx.save();
+            ctx.translate(this.getCenterX(), this.getCenterY());
+            const angle = Math.atan2(this.velocity.y, this.velocity.x) - Math.PI / 2;
+            ctx.rotate(angle);
+            ctx.fillStyle = '#330011';
+            ctx.beginPath();
+            ctx.moveTo(0, -this.height / 2);
+            ctx.lineTo(this.width * 0.4, this.height / 2);
+            ctx.lineTo(0, this.height * 0.2);
+            ctx.lineTo(-this.width * 0.4, this.height / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#FF2244';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#FF2244';
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            if (this.health < this.maxHealth) this.renderHealthBar(ctx);
+        }
+    }
+
+    getColor() { return '#FF2244'; }
+}

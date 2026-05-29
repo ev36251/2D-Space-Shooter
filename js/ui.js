@@ -436,9 +436,9 @@ class UI {
         ctx.shadowBlur = 0;
 
         // Stage name
-        const stageNames = ['ASTEROID BELT', 'NEBULA GAUNTLET', 'GALACTIC CORE'];
+        const stageNames = ['ASTEROID BELT', 'NEBULA GAUNTLET', 'GALACTIC CORE', 'THE VOID'];
         ctx.font = '20px "Press Start 2P"';
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = stageNumber === 4 ? '#FF4444' : '#FFFFFF';
         ctx.fillText(stageNames[stageNumber - 1] || '', GameConfig.CANVAS_WIDTH / 2, GameConfig.CANVAS_HEIGHT / 2 + 60);
 
         ctx.textAlign = 'left';

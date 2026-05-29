@@ -683,7 +683,7 @@ class Game {
     advanceToNextStage() {
         this.currentStage++;
 
-        if (this.currentStage > 3) {
+        if (this.currentStage > 4) {
             // Victory!
             this.onVictory();
         } else {
@@ -701,8 +701,8 @@ class Game {
         // Stop boss music and play victory music
         if (this.audioManager) {
             this.audioManager.playSound('stageComplete');
-            // Play super victory theme for stage 3, regular victory for stages 1-2
-            if (this.currentStage === 3) {
+            // Super victory only for stage 4 (the true final); regular for stages 1-3
+            if (this.currentStage === 4) {
                 this.audioManager.playMusic('superVictoryTheme');
             } else {
                 this.audioManager.playMusic('victoryTheme');

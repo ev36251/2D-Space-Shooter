@@ -15,9 +15,10 @@ class Stage {
 
     getSpawnInterval() {
         switch (this.number) {
-            case 1: return 1.1; // Faster spawning for harder stage 1
-            case 2: return 1.0; // Medium spawning
-            case 3: return 0.7; // Fast spawning
+            case 1: return 1.1;
+            case 2: return 1.0;
+            case 3: return 0.7;
+            case 4: return 0.65; // Fast but not overwhelming
             default: return 1.5;
         }
     }
@@ -27,14 +28,15 @@ class Stage {
             case 1: return 30;
             case 2: return 40;
             case 3: return 50;
+            case 4: return 52; // Slightly fewer than max
             default: return 30;
         }
     }
 
     createBackgroundLayers() {
-        // Single scrolling background layer
+        const speed = this.number === 4 ? 45 : 30; // Stage 4 scrolls faster
         return [
-            { y: 0, speed: 30, sprite: `stage${this.number}Bg` }
+            { y: 0, speed: speed, sprite: `stage${this.number}Bg` }
         ];
     }
 
@@ -87,6 +89,9 @@ class Stage {
             case 3:
                 enemy = this.spawnStage3Enemy(x);
                 break;
+            case 4:
+                enemy = this.spawnStage4Enemy(x);
+                break;
         }
 
         if (enemy) {
@@ -134,6 +139,31 @@ class Stage {
         }
     }
 
+    spawnStage4Enemy(x) {
+        this.wavePattern++;
+        const patternIndex = this.wavePattern % 16;
+
+        if (patternIndex < 4) {
+            // Rapid-fire elite striker
+            return new VoidStriker(x, -40);
+        } else if (patternIndex < 7) {
+            // Slow heavy plasma ship
+            return new PlasmaCruiser(x, -56);
+        } else if (patternIndex < 10) {
+            // Homing pursuer - needs player reference
+            return new DeathRaider(x, -35, this.game.player);
+        } else if (patternIndex < 13) {
+            // Mix of void strikers for pressure
+            const x2 = MathUtils.randomInt(50, GameConfig.CANVAS_WIDTH - 50);
+            this.game.enemies.push(new VoidStriker(x2, -40));
+            this.enemiesSpawned++;
+            return new VoidStriker(x, -40);
+        } else {
+            // Elite carrier that spawns void strikers
+            return new VoidCarrierElite(x, -74);
+        }
+    }
+
     spawnBoss() {
         switch (this.number) {
             case 1:
@@ -144,6 +174,9 @@ class Stage {
                 break;
             case 3:
                 this.game.boss = new Stage3Boss();
+                break;
+            case 4:
+                this.game.boss = new Stage4Boss();
                 break;
         }
 
@@ -157,7 +190,7 @@ class Stage {
 
     renderBackground(ctx) {
         // Fill base color
-        const colors = ['#000033', '#1a0033', '#000011'];
+        const colors = ['#000033', '#1a0033', '#000011', '#110000'];
         ctx.fillStyle = colors[this.number - 1] || '#000000';
         ctx.fillRect(0, 0, GameConfig.CANVAS_WIDTH, GameConfig.CANVAS_HEIGHT);
 

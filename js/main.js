@@ -81,12 +81,18 @@ class AssetLoader {
         this.loadImage('enemyInterceptor', 'assets/images/enemies/interceptor.png');
         this.loadImage('enemyBomber', 'assets/images/enemies/bomber.png');
         this.loadImage('enemyCarrier', 'assets/images/enemies/carrier.png');
+        // Stage 4 enemy sprites (Kenney Space Shooter Extension - CC0)
+        this.loadImage('enemyVoidStriker', 'assets/images/enemies/void-striker.png');
+        this.loadImage('enemyPlasmaCruiser', 'assets/images/enemies/plasma-cruiser.png');
+        this.loadImage('enemyEliteCarrier', 'assets/images/enemies/elite-carrier.png');
+        this.loadImage('enemyDeathRaider', 'assets/images/enemies/death-raider.png');
 
         // Boss assets
         this.loadImage('boss1', 'assets/images/bosses/boss-1-body.png');
         this.loadImage('boss1New', 'assets/images/bosses/boss-1-new.png');
         this.loadImage('boss2', 'assets/images/bosses/boss-2-main.png');
         this.loadImage('boss3', 'assets/images/bosses/boss-3-core.png');
+        this.loadImage('boss4', 'assets/images/bosses/boss-4-main.png');
 
         // Projectile assets
         this.loadImage('playerLaser', 'assets/images/projectiles/player-laser.png');
@@ -115,6 +121,7 @@ class AssetLoader {
         this.loadImage('stage1Bg', 'assets/images/backgrounds/stage-1-bg.png');
         this.loadImage('stage2Bg', 'assets/images/backgrounds/stage-2-bg.png');
         this.loadImage('stage3Bg', 'assets/images/backgrounds/stage-3-bg.png');
+        this.loadImage('stage4Bg', 'assets/images/backgrounds/stage-4-bg.png');
 
         // Note: Title/Game Over screens are rendered with text, no images needed
 

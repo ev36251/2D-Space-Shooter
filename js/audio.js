@@ -151,6 +151,7 @@ class AudioManager {
         this.loadSound('stage1Theme', 'assets/audio/music/stage-1-theme.mp3', true);
         this.loadSound('stage2Theme', 'assets/audio/music/stage-2-theme.mp3', true);
         this.loadSound('stage3Theme', 'assets/audio/music/stage-3-theme.ogg', true);
+        this.loadSound('stage4Theme', 'assets/audio/music/stage-4-theme.mp3', true);
         this.loadSound('bossTheme', 'assets/audio/music/boss-theme.wav', true, 0.3); // Play at 30% volume
         this.loadSound('victoryTheme', 'assets/audio/music/victory.mp3', true, 1.0, 1); // Victory music after stages 1 & 2 - plays once
         this.loadSound('superVictoryTheme', 'assets/audio/music/super-victory.mp3', true, 1.0, 1); // Victory music after stage 3 - plays once

@@ -173,6 +173,71 @@ class EnemyBullet extends Projectile {
     }
 }
 
+// Fast enemy bullet used by Stage 4 enemies
+class EnemyBulletFast extends Projectile {
+    constructor(x, y, targetX = 0, targetY = 1) {
+        const speed = 480;
+        const angle = Math.atan2(targetY, targetX);
+        super(x, y, Math.cos(angle) * speed, Math.sin(angle) * speed, 10, false);
+        this.sprite = 'enemyBulletFast';
+        this.width = 5;
+        this.height = 14;
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        const vw = this.width * 1.6;
+        const vh = this.height * 1.6;
+        if (this.sprite && assets.images[this.sprite]) {
+            ctx.drawImage(assets.images[this.sprite], this.x - vw / 2, this.y - vh / 2, vw, vh);
+        } else {
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = '#FF6600';
+            ctx.fillStyle = '#FF8800';
+            ctx.fillRect(this.x - vw / 2, this.y - vh / 2, vw, vh);
+            ctx.shadowBlur = 0;
+        }
+    }
+}
+
+// Large slow plasma bolt fired by Stage 4 PlasmaCruiser
+class PlasmaBolt extends Projectile {
+    constructor(x, y, vxDir = 0, vyDir = 1) {
+        const speed = 200;
+        super(x, y, vxDir * speed, vyDir * speed, 18, false);
+        this.sprite = 'plasmaBolt';
+        this.width = 18;
+        this.height = 18;
+        this.radius = 9;
+        this.pulseTimer = 0;
+    }
+
+    update(deltaTime) {
+        this.pulseTimer += deltaTime;
+        super.update(deltaTime);
+    }
+
+    render(ctx) {
+        if (!this.alive) return;
+        const pulse = Math.sin(this.pulseTimer * 8) * 0.15 + 1.0;
+        const r = this.radius * pulse;
+        ctx.save();
+        const grd = ctx.createRadialGradient(this.x, this.y, 2, this.x, this.y, r * 1.8);
+        grd.addColorStop(0, 'rgba(255, 50, 180, 1)');
+        grd.addColorStop(0.5, 'rgba(180, 0, 100, 0.8)');
+        grd.addColorStop(1, 'rgba(80, 0, 60, 0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#FFAADD';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
 // Enemy missile (slower, homing)
 class EnemyMissile extends Projectile {
     constructor(x, y) {
