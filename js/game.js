@@ -725,11 +725,12 @@ class Game {
             this.audioManager.playSound('enemyExplode');
         }
 
-        // Chance to drop power-up
-        if (Math.random() < GameConfig.POWERUP_DROP_CHANCE) {
-            // Don't spawn weapon powerups if player is at max level (3 guns)
+        // Chance to drop power-up (slightly higher in stage 4)
+        const dropChance = this.currentStage === 4 ? GameConfig.POWERUP_DROP_CHANCE + 0.05 : GameConfig.POWERUP_DROP_CHANCE;
+        if (Math.random() < dropChance) {
             const excludeWeapon = this.player.weaponLevel >= 3;
-            this.powerups.push(createRandomPowerup(enemy.getCenterX(), enemy.getCenterY(), excludeWeapon));
+            const boostHealth = this.currentStage === 4;
+            this.powerups.push(createRandomPowerup(enemy.getCenterX(), enemy.getCenterY(), excludeWeapon, boostHealth));
         }
     }
 

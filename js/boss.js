@@ -287,23 +287,13 @@ class BattlecruiserBoss extends Boss {
 
     shoot(game) {
         const patterns = [
-            this.shootStraight.bind(this),
-            this.shootSpread.bind(this),
-            this.shootCircle.bind(this)
+            this.shootSpread.bind(this),  // Phase 1: 5-way spread from the start
+            this.shootSpread.bind(this),  // Phase 2: same spread but fires faster
+            this.shootCircle.bind(this)   // Phase 3: full circle
         ];
 
-        // Use more complex patterns in later phases
         const patternIndex = Math.min(this.phase - 1, patterns.length - 1);
         patterns[patternIndex](game);
-    }
-
-    shootStraight(game) {
-        game.enemyProjectiles.push(new EnemyBullet(
-            this.getCenterX(),
-            this.y + this.height,
-            0,
-            1
-        ));
     }
 
     shootSpread(game) {

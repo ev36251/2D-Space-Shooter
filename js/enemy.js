@@ -459,7 +459,7 @@ class ShieldedCarrier extends Enemy {
 class VoidStriker extends Enemy {
     constructor(x, y) {
         super(x, y, 38, 38, 7, GameConfig.SCORE_LARGE_ENEMY);
-        this.velocity.y = 170;
+        this.velocity.y = 120;
         this.sprite = 'enemyVoidStriker';
         this.fireRate = 0.9;
         this.burstCount = 0;
@@ -550,7 +550,7 @@ class VoidStriker extends Enemy {
 class PlasmaCruiser extends Enemy {
     constructor(x, y) {
         super(x, y, 54, 54, 14, GameConfig.SCORE_LARGE_ENEMY);
-        this.velocity.y = 55;
+        this.velocity.y = 38;
         this.sprite = 'enemyPlasmaCruiser';
         this.fireRate = 1.8;
         this.chargeTimer = 0;
@@ -638,7 +638,7 @@ class PlasmaCruiser extends Enemy {
 class VoidCarrierElite extends Enemy {
     constructor(x, y) {
         super(x, y, 72, 72, 18, GameConfig.SCORE_LARGE_ENEMY);
-        this.velocity.y = 40;
+        this.velocity.y = 28;
         this.sprite = 'enemyEliteCarrier';
         this.fireRate = 2.0;
         this.spawnTimer = 0;
@@ -733,7 +733,7 @@ class DeathRaider extends Enemy {
         super(x, y, 32, 32, 5, GameConfig.SCORE_MEDIUM_ENEMY);
         this.sprite = 'enemyDeathRaider';
         this.player = player;
-        this.speed = 160;
+        this.speed = 120;
         this.missileTimer = 0;
         this.missileRate = 2.5;
         this.trackingStrength = 140; // how hard it steers toward player

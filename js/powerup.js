@@ -221,12 +221,11 @@ class Powerup extends GameObject {
 }
 
 // Helper function to create random power-up
-function createRandomPowerup(x, y, excludeWeapon = false) {
+function createRandomPowerup(x, y, excludeWeapon = false, boostHealth = false) {
     let types;
     let weights;
 
     if (excludeWeapon) {
-        // Don't spawn weapon powerups if player is at max level
         types = [
             PowerupType.SHIELD,
             PowerupType.LIFE,
@@ -234,7 +233,10 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [25, 20, 15, 25, 15]; // Shield 25%, Life 20%, Multiplier 15%, Missile 25%, Speed 15%
+        // Stage 4: double the health weight so it's far more common
+        weights = boostHealth
+            ? [20, 40, 10, 20, 10]
+            : [25, 20, 15, 25, 15];
     } else {
         types = [
             PowerupType.WEAPON,
@@ -244,7 +246,9 @@ function createRandomPowerup(x, y, excludeWeapon = false) {
             PowerupType.MISSILE,
             PowerupType.SPEED
         ];
-        weights = [20, 20, 15, 10, 20, 15]; // Weapon 20%, Shield 20%, Life 15%, Multiplier 10%, Missile 20%, Speed 15%
+        weights = boostHealth
+            ? [10, 15, 40, 10, 15, 10]
+            : [20, 20, 15, 10, 20, 15];
     }
 
     // Filter out the last spawned type to prevent consecutive duplicates
