@@ -93,8 +93,9 @@ class BasicDrone extends Enemy {
     }
 
     shoot(game) {
-        // 30% chance to fire aimed shot at player
-        if (Math.random() < 0.3 && game.player.alive) {
+        // Only aim at player if they are below this enemy
+        if (Math.random() < 0.3 && game.player.alive &&
+                game.player.getCenterY() > this.getCenterY()) {
             const dx = game.player.getCenterX() - this.getCenterX();
             const dy = game.player.getCenterY() - this.getCenterY();
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -188,7 +189,8 @@ class AdvancedFighter extends Enemy {
     }
 
     shoot(game) {
-        // Shoot toward player
+        // Only shoot toward player if they are below this enemy
+        if (!game.player.alive || game.player.getCenterY() <= this.getCenterY()) return;
         const dx = game.player.getCenterX() - this.getCenterX();
         const dy = game.player.getCenterY() - this.getCenterY();
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -316,10 +318,12 @@ class EliteInterceptor extends Enemy {
     }
 
     shoot(game) {
-        // Shoot burst of 3 bullets
+        // Only burst-fire at player if they are below this enemy
+        if (!game.player.alive || game.player.getCenterY() <= this.getCenterY()) return;
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
-                if (this.alive && game.player.alive) {
+                if (this.alive && game.player.alive &&
+                        game.player.getCenterY() > this.getCenterY()) {
                     const dx = game.player.getCenterX() - this.getCenterX();
                     const dy = game.player.getCenterY() - this.getCenterY();
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -493,7 +497,7 @@ class VoidStriker extends Enemy {
     }
 
     shoot(game) {
-        if (!game.player.alive) return;
+        if (!game.player.alive || game.player.getCenterY() <= this.getCenterY()) return;
         const dx = game.player.getCenterX() - this.getCenterX();
         const dy = game.player.getCenterY() - this.getCenterY();
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -568,15 +572,17 @@ class PlasmaCruiser extends Enemy {
     }
 
     shoot(game) {
-        if (!game.player.alive) return;
-        const dx = game.player.getCenterX() - this.getCenterX();
-        const dy = game.player.getCenterY() - this.getCenterY();
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        // Fire a wide slow plasma shot and two side shots
-        game.enemyProjectiles.push(new PlasmaBolt(
-            this.getCenterX(), this.y + this.height,
-            dx / dist * 0.7, dy / dist * 0.7
-        ));
+        // Side bullets always fire straight down; plasma only aims if player is below
+        const playerBelow = game.player.alive && game.player.getCenterY() > this.getCenterY();
+        if (playerBelow) {
+            const dx = game.player.getCenterX() - this.getCenterX();
+            const dy = game.player.getCenterY() - this.getCenterY();
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            game.enemyProjectiles.push(new PlasmaBolt(
+                this.getCenterX(), this.y + this.height,
+                dx / dist * 0.7, dy / dist * 0.7
+            ));
+        }
         game.enemyProjectiles.push(new EnemyBullet(
             this.getCenterX() - 18, this.y + this.height, -0.3, 1
         ));

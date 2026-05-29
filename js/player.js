@@ -181,11 +181,6 @@ class Player extends GameObject {
         // Take actual damage
         this.health -= amount;
 
-        // Lose a weapon level if at max level (3 guns)
-        if (this.weaponLevel === 3) {
-            this.weaponLevel = 2;
-        }
-
         if (this.health <= 0) {
             this.health = 0;
             this.alive = false;
