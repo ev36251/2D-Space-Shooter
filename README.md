@@ -20,10 +20,10 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 - **4 Unique Stages** with increasing difficulty
 - **Epic Boss Battles** at the end of each stage
 - **Power-ups System**:
-  - 🔫 Weapon Upgrades (up to triple shot)
+  - 🔫 Weapon Upgrades (up to triple shot — permanent once reached)
   - 🚀 Missiles (explosive area damage, press SHIFT to fire)
   - 🛡️ Shield (absorbs 3 hits with visual indicator)
-  - ❤️ Health Restore (+25 HP)
+  - ❤️ Health Restore (+25 HP) — drops more frequently in Stage 4
   - ⭐ Score Multiplier (2x for 10 seconds)
   - ⚡ Speed Boost (+50% movement speed for 10 seconds)
 - **Global Leaderboard** - Compete with players worldwide!
@@ -34,9 +34,9 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 ## 🎯 Game Stages
 
 1. **Asteroid Belt** - Navigate through space debris and basic enemies. Boss: *DESTROYER*
-2. **Nebula Gauntlet** - Face advanced fighters and coordinated attacks. Boss: *BATTLECRUISER*
+2. **Nebula Gauntlet** - Face advanced fighters and coordinated attacks. The Battlecruiser opens with a 5-way spread from the first shot. Boss: *BATTLECRUISER*
 3. **Galactic Core** - Survive intense bullet patterns and elite enemy formations. Boss: *COMMAND SHIP*
-4. **The Void** - The ultimate gauntlet. Void Strikers, Plasma Cruisers, and relentless Death Raiders swarm you before you face the 4-phase final boss. Boss: *VOID EMPEROR*
+4. **The Void** - The ultimate gauntlet. Void Strikers, Plasma Cruisers, and relentless Death Raiders swarm you. Enemies only fire downward — no cheap shots from behind. Health packs drop more frequently to keep you in the fight. Boss: *VOID EMPEROR* (4 phases, 750 HP)
 
 ## 🏆 Leaderboard
 
