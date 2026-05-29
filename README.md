@@ -17,7 +17,7 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 
 ## ✨ Features
 
-- **3 Unique Stages** with increasing difficulty
+- **4 Unique Stages** with increasing difficulty
 - **Epic Boss Battles** at the end of each stage
 - **Power-ups System**:
   - 🔫 Weapon Upgrades (up to triple shot)
@@ -33,9 +33,10 @@ A retro-style 2D space shooter game built with HTML5 Canvas and JavaScript.
 
 ## 🎯 Game Stages
 
-1. **Asteroid Belt** - Navigate through space debris and basic enemies
-2. **Nebula Gauntlet** - Face advanced fighters and coordinated attacks
-3. **Galactic Core** - Survive intense bullet patterns and the final boss
+1. **Asteroid Belt** - Navigate through space debris and basic enemies. Boss: *DESTROYER*
+2. **Nebula Gauntlet** - Face advanced fighters and coordinated attacks. Boss: *BATTLECRUISER*
+3. **Galactic Core** - Survive intense bullet patterns and elite enemy formations. Boss: *COMMAND SHIP*
+4. **The Void** - The ultimate gauntlet. Void Strikers, Plasma Cruisers, and relentless Death Raiders swarm you before you face the 4-phase final boss. Boss: *VOID EMPEROR*
 
 ## 🏆 Leaderboard
 
@@ -51,7 +52,10 @@ The game features a **global leaderboard**. When you achieve a top 10 score, you
 
 ## 🎨 Credits
 
-- Game sprites: [OpenGameArt.org - Space Shooter Redux](https://opengameart.org/content/space-shooter-redux)
+- Game sprites (stages 1–3): [OpenGameArt.org - Space Shooter Redux](https://opengameart.org/content/space-shooter-redux)
+- Stage 4 enemy sprites: [Kenney - Space Shooter Extension](https://kenney.nl/assets/space-shooter-extension) (CC0)
+- Stage 4 music: [HydroGene - 8-bit Epic Space Shooter Music](https://opengameart.org/content/8-bit-epic-space-shooter-music) (CC0)
+- Space backgrounds: [Seamless Space Backgrounds](https://opengameart.org/content/space-backgrounds) (CC0)
 - Font: Press Start 2P (Google Fonts)
 
 ## 📝 License
